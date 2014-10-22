@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "caffe/net.hpp"
+#include "tools/data_process.hpp"
+
 
 namespace caffe {
 

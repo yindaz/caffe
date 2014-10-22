@@ -12,6 +12,8 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/util/rng.hpp"
 
+
+
 namespace caffe {
 
 template <typename Dtype>
@@ -139,6 +141,10 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   this->datum_height_ = datum.height();
   this->datum_width_ = datum.width();
   this->datum_size_ = datum.channels() * datum.height() * datum.width();
+
+  // get all keys from dataset
+  ExternData.SetupDataNumber( mdb_env_);
+  ExternData.SetupLMDB( mdb_dbi_, mdb_txn_);
 }
 
 // This function is used to create a thread that prefetches the data.
@@ -152,6 +158,8 @@ void DataLayer<Dtype>::InternalThreadEntry() {
     top_label = this->prefetch_label_.mutable_cpu_data();
   }
   const int batch_size = this->layer_param_.data_param().batch_size();
+
+  ExternData.ResetDataLocal(batch_size);
 
   for (int item_id = 0; item_id < batch_size; ++item_id) {
     // get a blob
@@ -178,6 +186,10 @@ void DataLayer<Dtype>::InternalThreadEntry() {
       top_label[item_id] = datum.label();
     }
 
+    // update to extern data
+    ExternData.AddNewDataGlobal( mdb_key_, top_label[item_id]);
+    ExternData.AddNewDataLocal(false, item_id);
+
     // go to the next iter
     switch (this->layer_param_.data_param().backend()) {
     case DataParameter_DB_LEVELDB:
@@ -195,12 +207,15 @@ void DataLayer<Dtype>::InternalThreadEntry() {
         DLOG(INFO) << "Restarting data prefetching from start.";
         CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
                 &mdb_value_, MDB_FIRST), MDB_SUCCESS);
+        ExternData.AddNewDataLocal(true, 0);
       }
       break;
     default:
       LOG(FATAL) << "Unknown database backend";
     }
   }
+
+
 }
 
 INSTANTIATE_CLASS(DataLayer);

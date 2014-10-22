@@ -7,6 +7,8 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/vision_layers.hpp"
 
+extern DataProcess ExternData;
+
 namespace caffe {
 
 template <typename Dtype>
@@ -77,6 +79,14 @@ void InnerProductLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     vector<Blob<Dtype>*>* bottom) {
   if (this->param_propagate_down_[0]) {
+    // Detect outlier if haven't done
+    if ( !ExternData.IdentifyOutlier || !ExternData.ReWeighted)
+    {
+      const Dtype* top_source = top[0]->cpu_diff();
+      ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
+      ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);
+    }
+    
     const Dtype* top_diff = top[0]->cpu_diff();
     const Dtype* bottom_data = (*bottom)[0]->cpu_data();
     // Gradient with respect to weight
@@ -98,6 +108,33 @@ void InnerProductLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         (*bottom)[0]->mutable_cpu_diff());
   }
 }
+
+// template <typename Dtype>
+// void InnerProductLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
+//     const vector<bool>& propagate_down,
+//     vector<Blob<Dtype>*>* bottom) {
+//   if (this->param_propagate_down_[0]) {
+//     const Dtype* top_diff = top[0]->cpu_diff();
+//     const Dtype* bottom_data = (*bottom)[0]->cpu_data();
+//     // Gradient with respect to weight
+//     caffe_cpu_gemm<Dtype>(CblasTrans, CblasNoTrans, N_, K_, M_, (Dtype)1.,
+//         top_diff, bottom_data, (Dtype)0., this->blobs_[0]->mutable_cpu_diff());
+//   }
+//   if (bias_term_ && this->param_propagate_down_[1]) {
+//     const Dtype* top_diff = top[0]->cpu_diff();
+//     // Gradient with respect to bias
+//     caffe_cpu_gemv<Dtype>(CblasTrans, M_, N_, (Dtype)1., top_diff,
+//         bias_multiplier_.cpu_data(), (Dtype)0.,
+//         this->blobs_[1]->mutable_cpu_diff());
+//   }
+//   if (propagate_down[0]) {
+//     const Dtype* top_diff = top[0]->cpu_diff();
+//     // Gradient with respect to bottom data
+//     caffe_cpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, M_, K_, N_, (Dtype)1.,
+//         top_diff, this->blobs_[0]->cpu_data(), (Dtype)0.,
+//         (*bottom)[0]->mutable_cpu_diff());
+//   }
+// }
 
 #ifdef CPU_ONLY
 STUB_GPU(InnerProductLayer);

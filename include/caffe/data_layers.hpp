@@ -18,6 +18,8 @@
 #include "caffe/layer.hpp"
 #include "caffe/proto/caffe.pb.h"
 
+extern DataProcess ExternData;
+
 namespace caffe {
 
 #define HDF5_DATA_DATASET_NAME "data"
