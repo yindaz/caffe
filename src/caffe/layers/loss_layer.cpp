@@ -8,6 +8,8 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/vision_layers.hpp"
 
+extern DataProcess ExternData;
+
 namespace caffe {
 
 template <typename Dtype>

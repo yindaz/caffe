@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "caffe/net.hpp"
-#include "tools/data_process.hpp"
-
+#include "data_process.hpp"
+extern DataProcess ExternData;
 
 namespace caffe {
 

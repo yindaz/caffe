@@ -18,7 +18,9 @@
 #include "caffe/layer.hpp"
 #include "caffe/proto/caffe.pb.h"
 
+#include "caffe/data_process.hpp"
 extern DataProcess ExternData;
+
 
 namespace caffe {
 

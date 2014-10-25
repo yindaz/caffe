@@ -1,0 +1,4 @@
+Log file created at: 2014/10/25 01:07:24
+Running on machine: pvg-gpu-desktop
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1025 01:07:24.326417 28137 caffe.cpp:108] Use GPU with device ID 2

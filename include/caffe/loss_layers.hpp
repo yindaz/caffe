@@ -11,7 +11,9 @@
 #include "caffe/neuron_layers.hpp"
 #include "caffe/proto/caffe.pb.h"
 
-extern DataProcess ExternData;
+// #include "data_process.hpp"
+
+
 
 namespace caffe {
 

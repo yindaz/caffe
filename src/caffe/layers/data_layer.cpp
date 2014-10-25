@@ -12,7 +12,7 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/util/rng.hpp"
 
-
+DataProcess ExternData;
 
 namespace caffe {
 
@@ -159,7 +159,11 @@ void DataLayer<Dtype>::InternalThreadEntry() {
   }
   const int batch_size = this->layer_param_.data_param().batch_size();
 
-  ExternData.ResetDataLocal(batch_size);
+  //ExternData.ResetDataLocal(batch_size);
+  if (ExternData.ACTIVATE)
+  {
+	  ExternData.SelectedDataID.assign(batch_size, -1);
+  }
 
   for (int item_id = 0; item_id < batch_size; ++item_id) {
     // get a blob
@@ -187,7 +191,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
     }
 
     // update to extern data
-    ExternData.AddNewDataGlobal( mdb_key_, top_label[item_id]);
+    ExternData.AddNewDataGlobalWithKey( mdb_key_, top_label[item_id]);
     ExternData.AddNewDataLocal(false, item_id);
 
     // go to the next iter
@@ -215,6 +219,20 @@ void DataLayer<Dtype>::InternalThreadEntry() {
     }
   }
 
+//debug
+//  if (ExternData.ACTIVATE)
+//  {
+//	  LOG(INFO) << "The all keys obtained:";
+//	  for (int i = 0; i<ExternData.NumberData; i++)
+//	  {
+//		  LOG(INFO) << (char*)(ExternData.Key[i].mv_data);
+//	  }
+//	  LOG(INFO) << "The current keys obtained:";
+//	  for (int i = 0; i<ExternData.SelectedDataID.size(); i++)
+//	  {
+//		  LOG(INFO) << (char*)(ExternData.Key[ExternData.SelectedDataID[i]].mv_data);
+//	  }
+//  }
 
 }
 

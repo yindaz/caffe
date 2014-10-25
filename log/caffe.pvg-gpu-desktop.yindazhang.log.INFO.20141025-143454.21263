@@ -1,0 +1,1578 @@
+Log file created at: 2014/10/25 14:34:54
+Running on machine: pvg-gpu-desktop
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1025 14:34:54.672101 21263 caffe.cpp:108] Use GPU with device ID 2
+I1025 14:34:54.943632 21263 caffe.cpp:116] Starting Optimization
+I1025 14:34:54.943764 21263 solver.cpp:33] Initializing solver from parameters: 
+test_iter: 100
+test_interval: 100
+base_lr: 0.01
+display: 20
+max_iter: 200
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 100000
+snapshot: 10000
+snapshot_prefix: "models/noise_negative/caffenet_train_debug"
+solver_mode: GPU
+net: "models/noise_negative/train_val.prototxt"
+I1025 14:34:54.944018 21263 solver.cpp:70] Creating training net from net file: models/noise_negative/train_val.prototxt
+I1025 14:34:54.944664 21263 net.cpp:275] The NetState phase (0) differed from the phase (1) specified by a rule in layer data
+I1025 14:34:54.944700 21263 net.cpp:275] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy
+I1025 14:34:54.944893 21263 net.cpp:39] Initializing net from parameters: 
+name: "CaffeNet"
+layers {
+  top: "data"
+  top: "label"
+  name: "data"
+  type: DATA
+  data_param {
+    source: "/home/yindazhang/Desktop/caffe/data/noise_negative/train_5_20_12_6_2_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mirror: true
+    crop_size: 227
+    mean_file: "/home/yindazhang/Documents/caffe/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+}
+layers {
+  bottom: "data"
+  top: "conv1"
+  name: "conv1"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "conv1"
+  top: "conv1"
+  name: "relu1"
+  type: RELU
+}
+layers {
+  bottom: "conv1"
+  top: "pool1"
+  name: "pool1"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool1"
+  top: "norm1"
+  name: "norm1"
+  type: LRN
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layers {
+  bottom: "norm1"
+  top: "conv2"
+  name: "conv2"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv2"
+  top: "conv2"
+  name: "relu2"
+  type: RELU
+}
+layers {
+  bottom: "conv2"
+  top: "pool2"
+  name: "pool2"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool2"
+  top: "norm2"
+  name: "norm2"
+  type: LRN
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layers {
+  bottom: "norm2"
+  top: "conv3"
+  name: "conv3"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "conv3"
+  top: "conv3"
+  name: "relu3"
+  type: RELU
+}
+layers {
+  bottom: "conv3"
+  top: "conv4"
+  name: "conv4"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv4"
+  top: "conv4"
+  name: "relu4"
+  type: RELU
+}
+layers {
+  bottom: "conv4"
+  top: "conv5"
+  name: "conv5"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv5"
+  top: "conv5"
+  name: "relu5"
+  type: RELU
+}
+layers {
+  bottom: "conv5"
+  top: "pool5"
+  name: "pool5"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool5"
+  top: "fc6"
+  name: "fc6"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "relu6"
+  type: RELU
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "drop6"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc7"
+  name: "fc7"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "relu7"
+  type: RELU
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "drop7"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc8"
+  name: "fc8"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+  name: "loss"
+  type: SOFTMAX_LOSS
+}
+state {
+  phase: TRAIN
+}
+I1025 14:34:54.946663 21263 net.cpp:67] Creating Layer data
+I1025 14:34:54.946681 21263 net.cpp:356] data -> data
+I1025 14:34:54.946707 21263 net.cpp:356] data -> label
+I1025 14:34:54.946723 21263 net.cpp:96] Setting up data
+I1025 14:34:54.994884 21263 data_layer.cpp:70] Opening lmdb /home/yindazhang/Desktop/caffe/data/noise_negative/train_5_20_12_6_2_lmdb
+I1025 14:34:55.002241 21263 data_layer.cpp:130] output data size: 100,3,227,227
+I1025 14:34:55.002297 21263 base_data_layer.cpp:36] Loading mean file from/home/yindazhang/Documents/caffe/data/ilsvrc12/imagenet_mean.binaryproto
+I1025 14:34:55.062197 21263 net.cpp:103] Top shape: 100 3 227 227 (15458700)
+I1025 14:34:55.062264 21263 net.cpp:103] Top shape: 100 1 1 1 (100)
+I1025 14:34:55.062299 21263 net.cpp:67] Creating Layer conv1
+I1025 14:34:55.062317 21263 net.cpp:394] conv1 <- data
+I1025 14:34:55.062341 21263 net.cpp:356] conv1 -> conv1
+I1025 14:34:55.062362 21263 net.cpp:96] Setting up conv1
+I1025 14:34:55.091157 21263 net.cpp:103] Top shape: 100 96 55 55 (29040000)
+I1025 14:34:55.091256 21263 net.cpp:67] Creating Layer relu1
+I1025 14:34:55.091272 21263 net.cpp:394] relu1 <- conv1
+I1025 14:34:55.091287 21263 net.cpp:345] relu1 -> conv1 (in-place)
+I1025 14:34:55.091305 21263 net.cpp:96] Setting up relu1
+I1025 14:34:55.091325 21263 net.cpp:103] Top shape: 100 96 55 55 (29040000)
+I1025 14:34:55.091348 21263 net.cpp:67] Creating Layer pool1
+I1025 14:34:55.091358 21263 net.cpp:394] pool1 <- conv1
+I1025 14:34:55.091403 21263 net.cpp:356] pool1 -> pool1
+I1025 14:34:55.091433 21263 net.cpp:96] Setting up pool1
+I1025 14:34:55.091475 21263 net.cpp:103] Top shape: 100 96 27 27 (6998400)
+I1025 14:34:55.091511 21263 net.cpp:67] Creating Layer norm1
+I1025 14:34:55.091527 21263 net.cpp:394] norm1 <- pool1
+I1025 14:34:55.091541 21263 net.cpp:356] norm1 -> norm1
+I1025 14:34:55.091559 21263 net.cpp:96] Setting up norm1
+I1025 14:34:55.091575 21263 net.cpp:103] Top shape: 100 96 27 27 (6998400)
+I1025 14:34:55.091598 21263 net.cpp:67] Creating Layer conv2
+I1025 14:34:55.091609 21263 net.cpp:394] conv2 <- norm1
+I1025 14:34:55.091650 21263 net.cpp:356] conv2 -> conv2
+I1025 14:34:55.091665 21263 net.cpp:96] Setting up conv2
+I1025 14:34:55.105739 21263 net.cpp:103] Top shape: 100 256 27 27 (18662400)
+I1025 14:34:55.105798 21263 net.cpp:67] Creating Layer relu2
+I1025 14:34:55.105811 21263 net.cpp:394] relu2 <- conv2
+I1025 14:34:55.105859 21263 net.cpp:345] relu2 -> conv2 (in-place)
+I1025 14:34:55.105873 21263 net.cpp:96] Setting up relu2
+I1025 14:34:55.105911 21263 net.cpp:103] Top shape: 100 256 27 27 (18662400)
+I1025 14:34:55.105969 21263 net.cpp:67] Creating Layer pool2
+I1025 14:34:55.105995 21263 net.cpp:394] pool2 <- conv2
+I1025 14:34:55.106012 21263 net.cpp:356] pool2 -> pool2
+I1025 14:34:55.106029 21263 net.cpp:96] Setting up pool2
+I1025 14:34:55.106050 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:55.106070 21263 net.cpp:67] Creating Layer norm2
+I1025 14:34:55.106083 21263 net.cpp:394] norm2 <- pool2
+I1025 14:34:55.106102 21263 net.cpp:356] norm2 -> norm2
+I1025 14:34:55.106118 21263 net.cpp:96] Setting up norm2
+I1025 14:34:55.106135 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:55.106156 21263 net.cpp:67] Creating Layer conv3
+I1025 14:34:55.106168 21263 net.cpp:394] conv3 <- norm2
+I1025 14:34:55.106187 21263 net.cpp:356] conv3 -> conv3
+I1025 14:34:55.106206 21263 net.cpp:96] Setting up conv3
+I1025 14:34:55.157238 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:55.157302 21263 net.cpp:67] Creating Layer relu3
+I1025 14:34:55.157316 21263 net.cpp:394] relu3 <- conv3
+I1025 14:34:55.157341 21263 net.cpp:345] relu3 -> conv3 (in-place)
+I1025 14:34:55.157357 21263 net.cpp:96] Setting up relu3
+I1025 14:34:55.157377 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:55.157398 21263 net.cpp:67] Creating Layer conv4
+I1025 14:34:55.157414 21263 net.cpp:394] conv4 <- conv3
+I1025 14:34:55.157433 21263 net.cpp:356] conv4 -> conv4
+I1025 14:34:55.157451 21263 net.cpp:96] Setting up conv4
+I1025 14:34:55.191884 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:55.191941 21263 net.cpp:67] Creating Layer relu4
+I1025 14:34:55.191953 21263 net.cpp:394] relu4 <- conv4
+I1025 14:34:55.191972 21263 net.cpp:345] relu4 -> conv4 (in-place)
+I1025 14:34:55.191992 21263 net.cpp:96] Setting up relu4
+I1025 14:34:55.192005 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:55.192023 21263 net.cpp:67] Creating Layer conv5
+I1025 14:34:55.192034 21263 net.cpp:394] conv5 <- conv4
+I1025 14:34:55.192045 21263 net.cpp:356] conv5 -> conv5
+I1025 14:34:55.192059 21263 net.cpp:96] Setting up conv5
+I1025 14:34:55.212185 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:55.212290 21263 net.cpp:67] Creating Layer relu5
+I1025 14:34:55.212303 21263 net.cpp:394] relu5 <- conv5
+I1025 14:34:55.212321 21263 net.cpp:345] relu5 -> conv5 (in-place)
+I1025 14:34:55.212337 21263 net.cpp:96] Setting up relu5
+I1025 14:34:55.212352 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:55.212383 21263 net.cpp:67] Creating Layer pool5
+I1025 14:34:55.212395 21263 net.cpp:394] pool5 <- conv5
+I1025 14:34:55.212419 21263 net.cpp:356] pool5 -> pool5
+I1025 14:34:55.212446 21263 net.cpp:96] Setting up pool5
+I1025 14:34:55.212474 21263 net.cpp:103] Top shape: 100 256 6 6 (921600)
+I1025 14:34:55.212504 21263 net.cpp:67] Creating Layer fc6
+I1025 14:34:55.212522 21263 net.cpp:394] fc6 <- pool5
+I1025 14:34:55.212540 21263 net.cpp:356] fc6 -> fc6
+I1025 14:34:55.212558 21263 net.cpp:96] Setting up fc6
+I1025 14:34:56.937391 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:56.937456 21263 net.cpp:67] Creating Layer relu6
+I1025 14:34:56.937506 21263 net.cpp:394] relu6 <- fc6
+I1025 14:34:56.937523 21263 net.cpp:345] relu6 -> fc6 (in-place)
+I1025 14:34:56.937538 21263 net.cpp:96] Setting up relu6
+I1025 14:34:56.937564 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:56.937578 21263 net.cpp:67] Creating Layer drop6
+I1025 14:34:56.937603 21263 net.cpp:394] drop6 <- fc6
+I1025 14:34:56.937618 21263 net.cpp:345] drop6 -> fc6 (in-place)
+I1025 14:34:56.937664 21263 net.cpp:96] Setting up drop6
+I1025 14:34:56.937690 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:56.937719 21263 net.cpp:67] Creating Layer fc7
+I1025 14:34:56.937733 21263 net.cpp:394] fc7 <- fc6
+I1025 14:34:56.937752 21263 net.cpp:356] fc7 -> fc7
+I1025 14:34:56.937772 21263 net.cpp:96] Setting up fc7
+I1025 14:34:57.703840 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:57.703905 21263 net.cpp:67] Creating Layer relu7
+I1025 14:34:57.703919 21263 net.cpp:394] relu7 <- fc7
+I1025 14:34:57.703984 21263 net.cpp:345] relu7 -> fc7 (in-place)
+I1025 14:34:57.704002 21263 net.cpp:96] Setting up relu7
+I1025 14:34:57.704104 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:57.704123 21263 net.cpp:67] Creating Layer drop7
+I1025 14:34:57.704151 21263 net.cpp:394] drop7 <- fc7
+I1025 14:34:57.704170 21263 net.cpp:345] drop7 -> fc7 (in-place)
+I1025 14:34:57.704186 21263 net.cpp:96] Setting up drop7
+I1025 14:34:57.704203 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:57.704221 21263 net.cpp:67] Creating Layer fc8
+I1025 14:34:57.704236 21263 net.cpp:394] fc8 <- fc7
+I1025 14:34:57.704248 21263 net.cpp:356] fc8 -> fc8
+I1025 14:34:57.704265 21263 net.cpp:96] Setting up fc8
+I1025 14:34:57.890861 21263 net.cpp:103] Top shape: 100 1000 1 1 (100000)
+I1025 14:34:57.890924 21263 net.cpp:67] Creating Layer loss
+I1025 14:34:57.890938 21263 net.cpp:394] loss <- fc8
+I1025 14:34:57.891021 21263 net.cpp:394] loss <- label
+I1025 14:34:57.891036 21263 net.cpp:356] loss -> loss
+I1025 14:34:57.891051 21263 net.cpp:96] Setting up loss
+I1025 14:34:57.891082 21263 net.cpp:103] Top shape: 1 1 1 1 (1)
+I1025 14:34:57.891091 21263 net.cpp:109]     with loss weight 1
+I1025 14:34:57.891142 21263 net.cpp:170] loss needs backward computation.
+I1025 14:34:57.891167 21263 net.cpp:170] fc8 needs backward computation.
+I1025 14:34:57.891188 21263 net.cpp:170] drop7 needs backward computation.
+I1025 14:34:57.891209 21263 net.cpp:170] relu7 needs backward computation.
+I1025 14:34:57.891224 21263 net.cpp:170] fc7 needs backward computation.
+I1025 14:34:57.891238 21263 net.cpp:170] drop6 needs backward computation.
+I1025 14:34:57.891252 21263 net.cpp:170] relu6 needs backward computation.
+I1025 14:34:57.891265 21263 net.cpp:170] fc6 needs backward computation.
+I1025 14:34:57.891280 21263 net.cpp:170] pool5 needs backward computation.
+I1025 14:34:57.891293 21263 net.cpp:170] relu5 needs backward computation.
+I1025 14:34:57.891306 21263 net.cpp:170] conv5 needs backward computation.
+I1025 14:34:57.891322 21263 net.cpp:170] relu4 needs backward computation.
+I1025 14:34:57.891336 21263 net.cpp:170] conv4 needs backward computation.
+I1025 14:34:57.891350 21263 net.cpp:170] relu3 needs backward computation.
+I1025 14:34:57.891365 21263 net.cpp:170] conv3 needs backward computation.
+I1025 14:34:57.891397 21263 net.cpp:170] norm2 needs backward computation.
+I1025 14:34:57.891410 21263 net.cpp:170] pool2 needs backward computation.
+I1025 14:34:57.891424 21263 net.cpp:170] relu2 needs backward computation.
+I1025 14:34:57.891438 21263 net.cpp:170] conv2 needs backward computation.
+I1025 14:34:57.891451 21263 net.cpp:170] norm1 needs backward computation.
+I1025 14:34:57.891465 21263 net.cpp:170] pool1 needs backward computation.
+I1025 14:34:57.891479 21263 net.cpp:170] relu1 needs backward computation.
+I1025 14:34:57.891495 21263 net.cpp:170] conv1 needs backward computation.
+I1025 14:34:57.891506 21263 net.cpp:172] data does not need backward computation.
+I1025 14:34:57.891521 21263 net.cpp:208] This network produces output loss
+I1025 14:34:57.891552 21263 net.cpp:467] Collecting Learning Rate and Weight Decay.
+I1025 14:34:57.891569 21263 net.cpp:219] Network initialization done.
+I1025 14:34:57.891582 21263 net.cpp:220] Memory required for data: 686414404
+I1025 14:34:57.892210 21263 solver.cpp:154] Creating test net (#0) specified by net file: models/noise_negative/train_val.prototxt
+I1025 14:34:57.892261 21263 net.cpp:275] The NetState phase (1) differed from the phase (0) specified by a rule in layer data
+I1025 14:34:57.892465 21263 net.cpp:39] Initializing net from parameters: 
+name: "CaffeNet"
+layers {
+  top: "data"
+  top: "label"
+  name: "data"
+  type: DATA
+  data_param {
+    source: "/home/yindazhang/Desktop/caffe/data/noise_negative/val_5_20_20_0_0_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 227
+    mean_file: "/home/yindazhang/Documents/caffe/data/ilsvrc12/imagenet_mean.binaryproto"
+  }
+}
+layers {
+  bottom: "data"
+  top: "conv1"
+  name: "conv1"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 96
+    kernel_size: 11
+    stride: 4
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "conv1"
+  top: "conv1"
+  name: "relu1"
+  type: RELU
+}
+layers {
+  bottom: "conv1"
+  top: "pool1"
+  name: "pool1"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool1"
+  top: "norm1"
+  name: "norm1"
+  type: LRN
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layers {
+  bottom: "norm1"
+  top: "conv2"
+  name: "conv2"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv2"
+  top: "conv2"
+  name: "relu2"
+  type: RELU
+}
+layers {
+  bottom: "conv2"
+  top: "pool2"
+  name: "pool2"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool2"
+  top: "norm2"
+  name: "norm2"
+  type: LRN
+  lrn_param {
+    local_size: 5
+    alpha: 0.0001
+    beta: 0.75
+  }
+}
+layers {
+  bottom: "norm2"
+  top: "conv3"
+  name: "conv3"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "conv3"
+  top: "conv3"
+  name: "relu3"
+  type: RELU
+}
+layers {
+  bottom: "conv3"
+  top: "conv4"
+  name: "conv4"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 384
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv4"
+  top: "conv4"
+  name: "relu4"
+  type: RELU
+}
+layers {
+  bottom: "conv4"
+  top: "conv5"
+  name: "conv5"
+  type: CONVOLUTION
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    group: 2
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "conv5"
+  top: "conv5"
+  name: "relu5"
+  type: RELU
+}
+layers {
+  bottom: "conv5"
+  top: "pool5"
+  name: "pool5"
+  type: POOLING
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool5"
+  top: "fc6"
+  name: "fc6"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "relu6"
+  type: RELU
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "drop6"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc7"
+  name: "fc7"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "relu7"
+  type: RELU
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "drop7"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc8"
+  name: "fc8"
+  type: INNER_PRODUCT
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "fc8"
+  bottom: "label"
+  top: "accuracy"
+  name: "accuracy"
+  type: ACCURACY
+  include {
+    phase: TEST
+  }
+}
+layers {
+  bottom: "fc8"
+  bottom: "label"
+  top: "loss"
+  name: "loss"
+  type: SOFTMAX_LOSS
+}
+state {
+  phase: TEST
+}
+I1025 14:34:57.894135 21263 net.cpp:67] Creating Layer data
+I1025 14:34:57.894152 21263 net.cpp:356] data -> data
+I1025 14:34:57.894168 21263 net.cpp:356] data -> label
+I1025 14:34:57.894182 21263 net.cpp:96] Setting up data
+I1025 14:34:57.894258 21263 data_layer.cpp:70] Opening lmdb /home/yindazhang/Desktop/caffe/data/noise_negative/val_5_20_20_0_0_lmdb
+I1025 14:34:57.894461 21263 data_layer.cpp:130] output data size: 100,3,227,227
+I1025 14:34:57.894476 21263 base_data_layer.cpp:36] Loading mean file from/home/yindazhang/Documents/caffe/data/ilsvrc12/imagenet_mean.binaryproto
+I1025 14:34:57.933835 21263 net.cpp:103] Top shape: 100 3 227 227 (15458700)
+I1025 14:34:57.933876 21263 net.cpp:103] Top shape: 100 1 1 1 (100)
+I1025 14:34:57.933899 21263 net.cpp:67] Creating Layer label_data_1_split
+I1025 14:34:57.933912 21263 net.cpp:394] label_data_1_split <- label
+I1025 14:34:57.933929 21263 net.cpp:356] label_data_1_split -> label_data_1_split_0
+I1025 14:34:57.933948 21263 net.cpp:356] label_data_1_split -> label_data_1_split_1
+I1025 14:34:57.933960 21263 net.cpp:96] Setting up label_data_1_split
+I1025 14:34:57.934041 21263 net.cpp:103] Top shape: 100 1 1 1 (100)
+I1025 14:34:57.934051 21263 net.cpp:103] Top shape: 100 1 1 1 (100)
+I1025 14:34:57.934072 21263 net.cpp:67] Creating Layer conv1
+I1025 14:34:57.934089 21263 net.cpp:394] conv1 <- data
+I1025 14:34:57.934106 21263 net.cpp:356] conv1 -> conv1
+I1025 14:34:57.934121 21263 net.cpp:96] Setting up conv1
+I1025 14:34:57.935778 21263 net.cpp:103] Top shape: 100 96 55 55 (29040000)
+I1025 14:34:57.935820 21263 net.cpp:67] Creating Layer relu1
+I1025 14:34:57.935833 21263 net.cpp:394] relu1 <- conv1
+I1025 14:34:57.935847 21263 net.cpp:345] relu1 -> conv1 (in-place)
+I1025 14:34:57.935860 21263 net.cpp:96] Setting up relu1
+I1025 14:34:57.935873 21263 net.cpp:103] Top shape: 100 96 55 55 (29040000)
+I1025 14:34:57.935889 21263 net.cpp:67] Creating Layer pool1
+I1025 14:34:57.935899 21263 net.cpp:394] pool1 <- conv1
+I1025 14:34:57.935973 21263 net.cpp:356] pool1 -> pool1
+I1025 14:34:57.935987 21263 net.cpp:96] Setting up pool1
+I1025 14:34:57.936017 21263 net.cpp:103] Top shape: 100 96 27 27 (6998400)
+I1025 14:34:57.936043 21263 net.cpp:67] Creating Layer norm1
+I1025 14:34:57.936055 21263 net.cpp:394] norm1 <- pool1
+I1025 14:34:57.936079 21263 net.cpp:356] norm1 -> norm1
+I1025 14:34:57.936105 21263 net.cpp:96] Setting up norm1
+I1025 14:34:57.936118 21263 net.cpp:103] Top shape: 100 96 27 27 (6998400)
+I1025 14:34:57.936136 21263 net.cpp:67] Creating Layer conv2
+I1025 14:34:57.936151 21263 net.cpp:394] conv2 <- norm1
+I1025 14:34:57.936167 21263 net.cpp:356] conv2 -> conv2
+I1025 14:34:57.936182 21263 net.cpp:96] Setting up conv2
+I1025 14:34:57.950053 21263 net.cpp:103] Top shape: 100 256 27 27 (18662400)
+I1025 14:34:57.950090 21263 net.cpp:67] Creating Layer relu2
+I1025 14:34:57.950101 21263 net.cpp:394] relu2 <- conv2
+I1025 14:34:57.950117 21263 net.cpp:345] relu2 -> conv2 (in-place)
+I1025 14:34:57.950130 21263 net.cpp:96] Setting up relu2
+I1025 14:34:57.950145 21263 net.cpp:103] Top shape: 100 256 27 27 (18662400)
+I1025 14:34:57.950158 21263 net.cpp:67] Creating Layer pool2
+I1025 14:34:57.950167 21263 net.cpp:394] pool2 <- conv2
+I1025 14:34:57.950181 21263 net.cpp:356] pool2 -> pool2
+I1025 14:34:57.950193 21263 net.cpp:96] Setting up pool2
+I1025 14:34:57.950208 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:57.950222 21263 net.cpp:67] Creating Layer norm2
+I1025 14:34:57.950230 21263 net.cpp:394] norm2 <- pool2
+I1025 14:34:57.950248 21263 net.cpp:356] norm2 -> norm2
+I1025 14:34:57.950260 21263 net.cpp:96] Setting up norm2
+I1025 14:34:57.950271 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:57.950287 21263 net.cpp:67] Creating Layer conv3
+I1025 14:34:57.950297 21263 net.cpp:394] conv3 <- norm2
+I1025 14:34:57.950347 21263 net.cpp:356] conv3 -> conv3
+I1025 14:34:57.950361 21263 net.cpp:96] Setting up conv3
+I1025 14:34:57.991197 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:57.991273 21263 net.cpp:67] Creating Layer relu3
+I1025 14:34:57.991286 21263 net.cpp:394] relu3 <- conv3
+I1025 14:34:57.991304 21263 net.cpp:345] relu3 -> conv3 (in-place)
+I1025 14:34:57.991319 21263 net.cpp:96] Setting up relu3
+I1025 14:34:57.991335 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:57.991351 21263 net.cpp:67] Creating Layer conv4
+I1025 14:34:57.991361 21263 net.cpp:394] conv4 <- conv3
+I1025 14:34:57.991384 21263 net.cpp:356] conv4 -> conv4
+I1025 14:34:57.991399 21263 net.cpp:96] Setting up conv4
+I1025 14:34:58.022263 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:58.022346 21263 net.cpp:67] Creating Layer relu4
+I1025 14:34:58.022359 21263 net.cpp:394] relu4 <- conv4
+I1025 14:34:58.022377 21263 net.cpp:345] relu4 -> conv4 (in-place)
+I1025 14:34:58.022392 21263 net.cpp:96] Setting up relu4
+I1025 14:34:58.022476 21263 net.cpp:103] Top shape: 100 384 13 13 (6489600)
+I1025 14:34:58.022495 21263 net.cpp:67] Creating Layer conv5
+I1025 14:34:58.022519 21263 net.cpp:394] conv5 <- conv4
+I1025 14:34:58.022549 21263 net.cpp:356] conv5 -> conv5
+I1025 14:34:58.022577 21263 net.cpp:96] Setting up conv5
+I1025 14:34:58.043409 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:58.043484 21263 net.cpp:67] Creating Layer relu5
+I1025 14:34:58.043498 21263 net.cpp:394] relu5 <- conv5
+I1025 14:34:58.043512 21263 net.cpp:345] relu5 -> conv5 (in-place)
+I1025 14:34:58.043527 21263 net.cpp:96] Setting up relu5
+I1025 14:34:58.043542 21263 net.cpp:103] Top shape: 100 256 13 13 (4326400)
+I1025 14:34:58.043560 21263 net.cpp:67] Creating Layer pool5
+I1025 14:34:58.043570 21263 net.cpp:394] pool5 <- conv5
+I1025 14:34:58.043582 21263 net.cpp:356] pool5 -> pool5
+I1025 14:34:58.043596 21263 net.cpp:96] Setting up pool5
+I1025 14:34:58.043612 21263 net.cpp:103] Top shape: 100 256 6 6 (921600)
+I1025 14:34:58.043628 21263 net.cpp:67] Creating Layer fc6
+I1025 14:34:58.043638 21263 net.cpp:394] fc6 <- pool5
+I1025 14:34:58.043651 21263 net.cpp:356] fc6 -> fc6
+I1025 14:34:58.043664 21263 net.cpp:96] Setting up fc6
+I1025 14:34:59.763509 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:59.763567 21263 net.cpp:67] Creating Layer relu6
+I1025 14:34:59.763581 21263 net.cpp:394] relu6 <- fc6
+I1025 14:34:59.763600 21263 net.cpp:345] relu6 -> fc6 (in-place)
+I1025 14:34:59.763617 21263 net.cpp:96] Setting up relu6
+I1025 14:34:59.763640 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:59.763664 21263 net.cpp:67] Creating Layer drop6
+I1025 14:34:59.763676 21263 net.cpp:394] drop6 <- fc6
+I1025 14:34:59.763692 21263 net.cpp:345] drop6 -> fc6 (in-place)
+I1025 14:34:59.763711 21263 net.cpp:96] Setting up drop6
+I1025 14:34:59.763727 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:34:59.763746 21263 net.cpp:67] Creating Layer fc7
+I1025 14:34:59.763761 21263 net.cpp:394] fc7 <- fc6
+I1025 14:34:59.763777 21263 net.cpp:356] fc7 -> fc7
+I1025 14:34:59.763797 21263 net.cpp:96] Setting up fc7
+I1025 14:35:00.528656 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:35:00.528717 21263 net.cpp:67] Creating Layer relu7
+I1025 14:35:00.528733 21263 net.cpp:394] relu7 <- fc7
+I1025 14:35:00.528750 21263 net.cpp:345] relu7 -> fc7 (in-place)
+I1025 14:35:00.528766 21263 net.cpp:96] Setting up relu7
+I1025 14:35:00.528790 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:35:00.528805 21263 net.cpp:67] Creating Layer drop7
+I1025 14:35:00.528820 21263 net.cpp:394] drop7 <- fc7
+I1025 14:35:00.528832 21263 net.cpp:345] drop7 -> fc7 (in-place)
+I1025 14:35:00.528847 21263 net.cpp:96] Setting up drop7
+I1025 14:35:00.528859 21263 net.cpp:103] Top shape: 100 4096 1 1 (409600)
+I1025 14:35:00.528877 21263 net.cpp:67] Creating Layer fc8
+I1025 14:35:00.528892 21263 net.cpp:394] fc8 <- fc7
+I1025 14:35:00.528911 21263 net.cpp:356] fc8 -> fc8
+I1025 14:35:00.528934 21263 net.cpp:96] Setting up fc8
+I1025 14:35:00.716960 21263 net.cpp:103] Top shape: 100 1000 1 1 (100000)
+I1025 14:35:00.717016 21263 net.cpp:67] Creating Layer fc8_fc8_0_split
+I1025 14:35:00.717031 21263 net.cpp:394] fc8_fc8_0_split <- fc8
+I1025 14:35:00.717048 21263 net.cpp:356] fc8_fc8_0_split -> fc8_fc8_0_split_0
+I1025 14:35:00.717066 21263 net.cpp:356] fc8_fc8_0_split -> fc8_fc8_0_split_1
+I1025 14:35:00.717115 21263 net.cpp:96] Setting up fc8_fc8_0_split
+I1025 14:35:00.717129 21263 net.cpp:103] Top shape: 100 1000 1 1 (100000)
+I1025 14:35:00.717140 21263 net.cpp:103] Top shape: 100 1000 1 1 (100000)
+I1025 14:35:00.717169 21263 net.cpp:67] Creating Layer accuracy
+I1025 14:35:00.717191 21263 net.cpp:394] accuracy <- fc8_fc8_0_split_0
+I1025 14:35:00.717214 21263 net.cpp:394] accuracy <- label_data_1_split_0
+I1025 14:35:00.717244 21263 net.cpp:356] accuracy -> accuracy
+I1025 14:35:00.717273 21263 net.cpp:96] Setting up accuracy
+I1025 14:35:00.717308 21263 net.cpp:103] Top shape: 1 1 1 1 (1)
+I1025 14:35:00.717325 21263 net.cpp:67] Creating Layer loss
+I1025 14:35:00.717341 21263 net.cpp:394] loss <- fc8_fc8_0_split_1
+I1025 14:35:00.717358 21263 net.cpp:394] loss <- label_data_1_split_1
+I1025 14:35:00.717386 21263 net.cpp:356] loss -> loss
+I1025 14:35:00.717401 21263 net.cpp:96] Setting up loss
+I1025 14:35:00.717425 21263 net.cpp:103] Top shape: 1 1 1 1 (1)
+I1025 14:35:00.717440 21263 net.cpp:109]     with loss weight 1
+I1025 14:35:00.717463 21263 net.cpp:170] loss needs backward computation.
+I1025 14:35:00.717478 21263 net.cpp:172] accuracy does not need backward computation.
+I1025 14:35:00.717492 21263 net.cpp:170] fc8_fc8_0_split needs backward computation.
+I1025 14:35:00.717509 21263 net.cpp:170] fc8 needs backward computation.
+I1025 14:35:00.717520 21263 net.cpp:170] drop7 needs backward computation.
+I1025 14:35:00.717535 21263 net.cpp:170] relu7 needs backward computation.
+I1025 14:35:00.717545 21263 net.cpp:170] fc7 needs backward computation.
+I1025 14:35:00.717561 21263 net.cpp:170] drop6 needs backward computation.
+I1025 14:35:00.717572 21263 net.cpp:170] relu6 needs backward computation.
+I1025 14:35:00.717586 21263 net.cpp:170] fc6 needs backward computation.
+I1025 14:35:00.717602 21263 net.cpp:170] pool5 needs backward computation.
+I1025 14:35:00.717615 21263 net.cpp:170] relu5 needs backward computation.
+I1025 14:35:00.717630 21263 net.cpp:170] conv5 needs backward computation.
+I1025 14:35:00.717641 21263 net.cpp:170] relu4 needs backward computation.
+I1025 14:35:00.717656 21263 net.cpp:170] conv4 needs backward computation.
+I1025 14:35:00.717669 21263 net.cpp:170] relu3 needs backward computation.
+I1025 14:35:00.717684 21263 net.cpp:170] conv3 needs backward computation.
+I1025 14:35:00.717700 21263 net.cpp:170] norm2 needs backward computation.
+I1025 14:35:00.717715 21263 net.cpp:170] pool2 needs backward computation.
+I1025 14:35:00.717725 21263 net.cpp:170] relu2 needs backward computation.
+I1025 14:35:00.717735 21263 net.cpp:170] conv2 needs backward computation.
+I1025 14:35:00.717743 21263 net.cpp:170] norm1 needs backward computation.
+I1025 14:35:00.717753 21263 net.cpp:170] pool1 needs backward computation.
+I1025 14:35:00.717762 21263 net.cpp:170] relu1 needs backward computation.
+I1025 14:35:00.717772 21263 net.cpp:170] conv1 needs backward computation.
+I1025 14:35:00.717782 21263 net.cpp:172] label_data_1_split does not need backward computation.
+I1025 14:35:00.717792 21263 net.cpp:172] data does not need backward computation.
+I1025 14:35:00.717800 21263 net.cpp:208] This network produces output accuracy
+I1025 14:35:00.717810 21263 net.cpp:208] This network produces output loss
+I1025 14:35:00.717844 21263 net.cpp:467] Collecting Learning Rate and Weight Decay.
+I1025 14:35:00.717860 21263 net.cpp:219] Network initialization done.
+I1025 14:35:00.717871 21263 net.cpp:220] Memory required for data: 687215208
+I1025 14:35:00.717962 21263 solver.cpp:44] Solver scaffolding done.
+I1025 14:35:00.717978 21263 caffe.cpp:124] Finetuning from /home/yindazhang/Desktop/caffe/models/noise_negative/caffenet_train_iter_100000.caffemodel
+I1025 14:35:03.003991 21263 solver.cpp:163] Solving CaffeNet
+I1025 14:35:03.004093 21263 solver.cpp:264] Iteration 0, Testing net (#0)
+I1025 14:35:18.192553 21263 solver.cpp:315]     Test net output #0: accuracy = 0.0842999
+I1025 14:35:18.192632 21263 solver.cpp:315]     Test net output #1: loss = 6.22724 (* 1 = 6.22724 loss)
+I1025 14:35:20.849517 21263 solver.cpp:198] Weight: 
+I1025 14:35:20.849578 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:35:20.849611 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 0
+I1025 14:35:20.849623 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 0
+I1025 14:35:20.849634 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:35:20.849644 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 0
+I1025 14:35:20.849659 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:35:20.849673 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 0
+I1025 14:35:20.849689 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:35:20.849701 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 0
+I1025 14:35:20.849712 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:35:20.849725 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:35:20.849740 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 0
+I1025 14:35:20.849752 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 0
+I1025 14:35:20.849764 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:35:20.849777 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:35:20.849791 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:35:20.849803 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 0
+I1025 14:35:20.849817 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 0
+I1025 14:35:20.849830 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:35:20.849843 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 0
+I1025 14:35:20.849856 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:35:20.849869 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:35:20.849882 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:35:20.849895 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:35:20.849908 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:35:20.849921 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 0
+I1025 14:35:20.849936 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:35:20.849948 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 0
+I1025 14:35:20.849961 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:35:20.849974 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 0
+I1025 14:35:20.849987 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:35:20.850002 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:35:20.850014 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 0
+I1025 14:35:20.850028 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 0
+I1025 14:35:20.850040 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 0
+I1025 14:35:20.850054 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:35:20.850067 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 0
+I1025 14:35:20.850215 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:35:20.850231 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:35:20.850244 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:35:20.850256 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:35:20.850266 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 0
+I1025 14:35:20.850277 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:35:20.850287 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 0
+I1025 14:35:20.850298 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 1
+I1025 14:35:20.850309 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:35:20.850319 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:35:20.850330 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 0
+I1025 14:35:20.850344 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 0
+I1025 14:35:20.850369 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 0
+I1025 14:35:20.850386 21263 solver.cpp:204] Iteration 0, loss = 5.09419
+I1025 14:35:20.850407 21263 solver.cpp:219]     Train net output #0: loss = 5.09419 (* 1 = 5.09419 loss)
+I1025 14:35:20.850438 21263 solver.cpp:420] Iteration 0, lr = 0.01
+I1025 14:36:20.069465 21263 solver.cpp:198] Weight: 
+I1025 14:36:20.069672 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:36:20.069700 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 0
+I1025 14:36:20.069710 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 0
+I1025 14:36:20.069722 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:36:20.069733 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 3
+I1025 14:36:20.069744 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:36:20.069761 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 2
+I1025 14:36:20.069775 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:36:20.069792 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 0
+I1025 14:36:20.069807 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:36:20.069825 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:36:20.069840 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 0
+I1025 14:36:20.069857 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 1
+I1025 14:36:20.069872 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:36:20.069890 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:36:20.069905 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:36:20.069921 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 0
+I1025 14:36:20.069936 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 0
+I1025 14:36:20.069953 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:36:20.069968 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 1
+I1025 14:36:20.069985 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:36:20.070000 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:36:20.070015 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:36:20.070031 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:36:20.070047 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:36:20.070062 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:36:20.070080 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:36:20.070096 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 0
+I1025 14:36:20.070112 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:36:20.070127 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 1
+I1025 14:36:20.070144 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:36:20.070159 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:36:20.070174 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 0
+I1025 14:36:20.070191 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 0
+I1025 14:36:20.070207 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:36:20.070224 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:36:20.070238 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 11
+I1025 14:36:20.070260 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:36:20.070276 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:36:20.070291 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:36:20.070308 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:36:20.070343 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 0
+I1025 14:36:20.070355 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:36:20.070365 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 0
+I1025 14:36:20.070376 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:36:20.070386 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:36:20.070396 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:36:20.070407 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 0
+I1025 14:36:20.070420 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 0
+I1025 14:36:20.070435 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 2
+I1025 14:36:20.070448 21263 solver.cpp:204] Iteration 20, loss = 0.184322
+I1025 14:36:20.070467 21263 solver.cpp:219]     Train net output #0: loss = 0.184322 (* 1 = 0.184322 loss)
+I1025 14:36:20.070482 21263 solver.cpp:420] Iteration 20, lr = 0.01
+I1025 14:37:18.458339 21263 solver.cpp:198] Weight: 
+I1025 14:37:18.458537 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:37:18.458564 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:37:18.458575 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 0
+I1025 14:37:18.458586 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:37:18.458597 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 4
+I1025 14:37:18.458607 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:37:18.458623 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 6
+I1025 14:37:18.458636 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:37:18.458649 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 0
+I1025 14:37:18.458663 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:37:18.458677 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:37:18.458689 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 0
+I1025 14:37:18.458703 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 1
+I1025 14:37:18.458716 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:37:18.458730 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:37:18.458744 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:37:18.459154 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:37:18.459172 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 0
+I1025 14:37:18.459185 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:37:18.459199 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 3
+I1025 14:37:18.459213 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:37:18.459225 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:37:18.459239 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:37:18.459252 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:37:18.459266 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:37:18.459280 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:37:18.459293 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:37:18.459307 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 0
+I1025 14:37:18.459321 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:37:18.459333 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 1
+I1025 14:37:18.459347 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:37:18.459360 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:37:18.459373 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 0
+I1025 14:37:18.459386 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 0
+I1025 14:37:18.459400 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:37:18.459414 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:37:18.459426 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 31
+I1025 14:37:18.459439 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:37:18.459452 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:37:18.459466 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:37:18.459480 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:37:18.459512 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 0
+I1025 14:37:18.459524 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:37:18.459534 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:37:18.459545 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:37:18.459555 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:37:18.459566 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:37:18.459576 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 0
+I1025 14:37:18.459590 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 0
+I1025 14:37:18.459604 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:37:18.459617 21263 solver.cpp:204] Iteration 40, loss = 0.0425047
+I1025 14:37:18.459637 21263 solver.cpp:219]     Train net output #0: loss = 0.0425047 (* 1 = 0.0425047 loss)
+I1025 14:37:18.459651 21263 solver.cpp:420] Iteration 40, lr = 0.01
+I1025 14:38:16.499487 21263 solver.cpp:198] Weight: 
+I1025 14:38:16.511848 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:38:16.511881 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:38:16.511893 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 0
+I1025 14:38:16.511904 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:38:16.511914 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 4
+I1025 14:38:16.511925 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:38:16.511940 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 7
+I1025 14:38:16.511952 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:38:16.511965 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:38:16.511978 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:38:16.511991 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:38:16.512004 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 0
+I1025 14:38:16.512017 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 1
+I1025 14:38:16.512030 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:38:16.512043 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:38:16.512056 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:38:16.512069 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:38:16.512083 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 1
+I1025 14:38:16.512094 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:38:16.512107 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 12
+I1025 14:38:16.512123 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:38:16.512136 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:38:16.512150 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:38:16.512162 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:38:16.512174 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:38:16.512187 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:38:16.512200 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:38:16.512212 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 0
+I1025 14:38:16.512225 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:38:16.512238 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 2
+I1025 14:38:16.512250 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:38:16.512264 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:38:16.512276 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 0
+I1025 14:38:16.512290 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 0
+I1025 14:38:16.512302 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:38:16.512315 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:38:16.512328 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 50
+I1025 14:38:16.512341 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:38:16.512353 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:38:16.512367 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:38:16.512379 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:38:16.512449 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:38:16.512461 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:38:16.512472 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:38:16.512482 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:38:16.512492 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:38:16.512503 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:38:16.512513 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 0
+I1025 14:38:16.512527 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 0
+I1025 14:38:16.512540 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:38:16.512554 21263 solver.cpp:204] Iteration 60, loss = 0.0160382
+I1025 14:38:16.512576 21263 solver.cpp:219]     Train net output #0: loss = 0.0160382 (* 1 = 0.0160382 loss)
+I1025 14:38:16.512591 21263 solver.cpp:420] Iteration 60, lr = 0.01
+I1025 14:39:16.618286 21263 solver.cpp:198] Weight: 
+I1025 14:39:16.618505 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:39:16.618531 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:39:16.618542 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 1
+I1025 14:39:16.618556 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:39:16.618567 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 5
+I1025 14:39:16.618578 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:39:16.618597 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 7
+I1025 14:39:16.618613 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:39:16.618630 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:39:16.618648 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:39:16.618664 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:39:16.618680 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 0
+I1025 14:39:16.618698 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 3
+I1025 14:39:16.618715 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:39:16.618729 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:39:16.618746 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:39:16.618760 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:39:16.618775 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 1
+I1025 14:39:16.618793 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:39:16.618809 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 16
+I1025 14:39:16.618824 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:39:16.618839 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:39:16.618856 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:39:16.618872 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:39:16.618890 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:39:16.618906 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:39:16.618921 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:39:16.618937 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 0
+I1025 14:39:16.618953 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:39:16.618969 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 2
+I1025 14:39:16.618988 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:39:16.619002 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:39:16.619019 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:39:16.619034 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 3
+I1025 14:39:16.619048 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:39:16.619065 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:39:16.619079 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 70
+I1025 14:39:16.619096 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:39:16.619108 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:39:16.619124 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:39:16.619139 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:39:16.619175 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:39:16.619187 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:39:16.619197 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:39:16.619209 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:39:16.619218 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:39:16.619230 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:39:16.619240 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 1
+I1025 14:39:16.619253 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:39:16.619267 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:39:16.619282 21263 solver.cpp:204] Iteration 80, loss = 0.0553694
+I1025 14:39:16.619300 21263 solver.cpp:219]     Train net output #0: loss = 0.0553694 (* 1 = 0.0553694 loss)
+I1025 14:39:16.619314 21263 solver.cpp:420] Iteration 80, lr = 0.01
+I1025 14:40:12.927525 21263 solver.cpp:264] Iteration 100, Testing net (#0)
+I1025 14:40:27.345793 21263 solver.cpp:315]     Test net output #0: accuracy = 0.500899
+I1025 14:40:27.345878 21263 solver.cpp:315]     Test net output #1: loss = 2.8324 (* 1 = 2.8324 loss)
+I1025 14:40:29.976836 21263 solver.cpp:198] Weight: 
+I1025 14:40:29.976897 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:40:29.976927 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:40:29.976939 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 1
+I1025 14:40:29.976950 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:40:29.976961 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 5
+I1025 14:40:29.976975 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:40:29.976989 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 8
+I1025 14:40:29.977004 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:40:29.977016 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:40:29.977030 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:40:29.977042 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:40:29.977056 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 1
+I1025 14:40:29.977068 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 5
+I1025 14:40:29.977082 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:40:29.977094 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 0
+I1025 14:40:29.977108 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:40:29.977120 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:40:29.977133 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 2
+I1025 14:40:29.977146 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 0
+I1025 14:40:29.977159 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 18
+I1025 14:40:29.977174 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:40:29.977187 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:40:29.977200 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:40:29.977213 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:40:29.977226 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:40:29.977239 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:40:29.977252 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:40:29.977265 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 1
+I1025 14:40:29.977278 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:40:29.977291 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 3
+I1025 14:40:29.977304 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:40:29.977318 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:40:29.977330 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:40:29.977344 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 3
+I1025 14:40:29.977356 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:40:29.977368 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:40:29.977381 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 90
+I1025 14:40:29.977393 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:40:29.977407 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:40:29.978083 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:40:29.978101 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:40:29.978112 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:40:29.978123 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 0
+I1025 14:40:29.978133 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:40:29.978143 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:40:29.978154 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:40:29.978164 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:40:29.978174 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 1
+I1025 14:40:29.978188 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:40:29.978202 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:40:29.978216 21263 solver.cpp:204] Iteration 100, loss = 0.0334745
+I1025 14:40:29.978238 21263 solver.cpp:219]     Train net output #0: loss = 0.0334745 (* 1 = 0.0334745 loss)
+I1025 14:40:29.978252 21263 solver.cpp:420] Iteration 100, lr = 0.01
+I1025 14:41:29.106724 21263 solver.cpp:198] Weight: 
+I1025 14:41:29.108567 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:41:29.108633 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:41:29.108656 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 3
+I1025 14:41:29.108685 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:41:29.108705 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 5
+I1025 14:41:29.108726 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:41:29.108746 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 11
+I1025 14:41:29.108774 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:41:29.108794 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:41:29.108815 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:41:29.108835 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:41:29.108855 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 3
+I1025 14:41:29.108881 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 5
+I1025 14:41:29.108901 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:41:29.108921 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 1
+I1025 14:41:29.108942 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:41:29.108961 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:41:29.108988 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 2
+I1025 14:41:29.109010 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 2
+I1025 14:41:29.109030 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 19
+I1025 14:41:29.109050 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:41:29.109071 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:41:29.109097 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:41:29.109119 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:41:29.109139 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:41:29.109159 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:41:29.109179 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:41:29.109205 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 2
+I1025 14:41:29.109227 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:41:29.109247 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 3
+I1025 14:41:29.109267 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:41:29.109287 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:41:29.109308 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:41:29.109335 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 3
+I1025 14:41:29.109354 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:41:29.109375 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:41:29.109395 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 110
+I1025 14:41:29.109422 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:41:29.109443 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:41:29.109462 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:41:29.109482 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:41:29.109535 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:41:29.109554 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 2
+I1025 14:41:29.109570 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:41:29.109588 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:41:29.109606 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:41:29.109622 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:41:29.109640 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 1
+I1025 14:41:29.109668 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:41:29.109688 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:41:29.109709 21263 solver.cpp:204] Iteration 120, loss = 0.0215961
+I1025 14:41:29.109745 21263 solver.cpp:219]     Train net output #0: loss = 0.0215961 (* 1 = 0.0215961 loss)
+I1025 14:41:29.109781 21263 solver.cpp:420] Iteration 120, lr = 0.01
+I1025 14:42:28.738242 21263 solver.cpp:198] Weight: 
+I1025 14:42:28.738904 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:42:28.739007 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:42:28.739048 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 3
+I1025 14:42:28.739074 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:42:28.739099 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 5
+I1025 14:42:28.739132 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:42:28.739158 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 12
+I1025 14:42:28.739192 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:42:28.739215 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:42:28.739250 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:42:28.739277 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:42:28.739301 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 3
+I1025 14:42:28.739331 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 7
+I1025 14:42:28.739363 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:42:28.739384 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 2
+I1025 14:42:28.739416 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 0
+I1025 14:42:28.739445 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:42:28.739476 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 4
+I1025 14:42:28.739501 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 2
+I1025 14:42:28.739526 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 20
+I1025 14:42:28.739562 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:42:28.739585 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:42:28.739610 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:42:28.739645 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:42:28.739670 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:42:28.739694 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:42:28.739727 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:42:28.739752 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 2
+I1025 14:42:28.739776 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:42:28.739828 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 3
+I1025 14:42:28.739856 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:42:28.739886 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:42:28.739908 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:42:28.739935 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 3
+I1025 14:42:28.739966 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:42:28.739989 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:42:28.740031 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 130
+I1025 14:42:28.740073 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:42:28.740094 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:42:28.740120 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:42:28.740147 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:42:28.740232 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:42:28.740258 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 5
+I1025 14:42:28.740275 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:42:28.740293 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:42:28.740310 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:42:28.740327 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:42:28.740346 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 2
+I1025 14:42:28.740375 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:42:28.740397 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:42:28.740424 21263 solver.cpp:204] Iteration 140, loss = 0.0250754
+I1025 14:42:28.740453 21263 solver.cpp:219]     Train net output #0: loss = 0.0250754 (* 1 = 0.0250754 loss)
+I1025 14:42:28.740489 21263 solver.cpp:420] Iteration 140, lr = 0.01
+I1025 14:43:28.889899 21263 solver.cpp:198] Weight: 
+I1025 14:43:28.893026 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:43:28.893057 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 1
+I1025 14:43:28.893069 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 4
+I1025 14:43:28.893080 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:43:28.893105 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 5
+I1025 14:43:28.893117 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:43:28.893131 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 12
+I1025 14:43:28.893147 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:43:28.893162 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:43:28.893174 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:43:28.893188 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:43:28.893201 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 5
+I1025 14:43:28.893214 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 8
+I1025 14:43:28.893226 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:43:28.893240 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 4
+I1025 14:43:28.893254 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 2
+I1025 14:43:28.893267 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:43:28.893280 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 4
+I1025 14:43:28.893293 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 2
+I1025 14:43:28.893306 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 22
+I1025 14:43:28.893319 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:43:28.893332 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:43:28.893345 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:43:28.893358 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:43:28.893371 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:43:28.893384 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:43:28.893399 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:43:28.893411 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 2
+I1025 14:43:28.893424 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:43:28.893436 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 3
+I1025 14:43:28.893450 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:43:28.893461 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:43:28.893476 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:43:28.893489 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 3
+I1025 14:43:28.893502 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:43:28.893515 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:43:28.893528 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 150
+I1025 14:43:28.893540 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:43:28.893554 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:43:28.893568 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:43:28.893581 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:43:28.893633 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 1
+I1025 14:43:28.893646 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 6
+I1025 14:43:28.893656 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:43:28.893667 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:43:28.893677 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:43:28.893687 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:43:28.893698 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 2
+I1025 14:43:28.893712 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:43:28.893725 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:43:28.893739 21263 solver.cpp:204] Iteration 160, loss = 0.0429991
+I1025 14:43:28.893760 21263 solver.cpp:219]     Train net output #0: loss = 0.0429991 (* 1 = 0.0429991 loss)
+I1025 14:43:28.893775 21263 solver.cpp:420] Iteration 160, lr = 0.01
+I1025 14:44:28.536794 21263 solver.cpp:198] Weight: 
+I1025 14:44:28.536998 21263 solver.cpp:201] Data: 00000000_n02981792/n02981792_6154.JPEG, Cost: 0
+I1025 14:44:28.537024 21263 solver.cpp:201] Data: 00000001_n03347037/n03347037_37039.JPEG4, Cost: 2
+I1025 14:44:28.537036 21263 solver.cpp:201] Data: 00000002_n01496331/n01496331_34987.JPEGe, Cost: 4
+I1025 14:44:28.537049 21263 solver.cpp:201] Data: 00000003_n01729322/n01729322_949.JPEG–, Cost: 0
+I1025 14:44:28.537060 21263 solver.cpp:201] Data: 00000004_n01496331/n01496331_3375.JPEGÇ, Cost: 6
+I1025 14:44:28.537075 21263 solver.cpp:201] Data: 00000005_n01491361/n01491361_5954.JPEGø, Cost: 0
+I1025 14:44:28.537088 21263 solver.cpp:201] Data: 00000006_n01491361/n01491361_12952.JPEG), Cost: 13
+I1025 14:44:28.537101 21263 solver.cpp:201] Data: 00000007_n03929855/n03929855_134.JPEGZ, Cost: 0
+I1025 14:44:28.537119 21263 solver.cpp:201] Data: 00000008_n01494475/n01494475_4172.JPEG‹, Cost: 1
+I1025 14:44:28.537135 21263 solver.cpp:201] Data: 00000009_n01443537/n01443537_23085.JPEG¼, Cost: 0
+I1025 14:44:28.537149 21263 solver.cpp:201] Data: 00000010_n03970156/n03970156_28203.JPEGí, Cost: 0
+I1025 14:44:28.537165 21263 solver.cpp:201] Data: 00000011_n01491361/n01491361_10384.JPEG, Cost: 6
+I1025 14:44:28.537180 21263 solver.cpp:201] Data: 00000012_n01494475/n01494475_2331.JPEGO, Cost: 10
+I1025 14:44:28.537196 21263 solver.cpp:201] Data: 00000013_n03992509/n03992509_3073.JPEG€, Cost: 0
+I1025 14:44:28.537211 21263 solver.cpp:201] Data: 00000014_n01484850/n01484850_32479.JPEG±, Cost: 7
+I1025 14:44:28.537227 21263 solver.cpp:201] Data: 00000015_n01491361/n01491361_7284.JPEGâ, Cost: 2
+I1025 14:44:28.537245 21263 solver.cpp:201] Data: 00000016_n01496331/n01496331_23039.JPEG, Cost: 1
+I1025 14:44:28.537261 21263 solver.cpp:201] Data: 00000017_n01496331/n01496331_10207.JPEGD, Cost: 5
+I1025 14:44:28.537277 21263 solver.cpp:201] Data: 00000018_n01494475/n01494475_6268.JPEGu, Cost: 3
+I1025 14:44:28.537294 21263 solver.cpp:201] Data: 00000019_n01494475/n01494475_5322.JPEG¦, Cost: 23
+I1025 14:44:28.537310 21263 solver.cpp:201] Data: 00000020_n01855672/n01855672_10953.JPEG×, Cost: 0
+I1025 14:44:28.537327 21263 solver.cpp:201] Data: 00000021_n03733131/n03733131_8110.JPEG, Cost: 0
+I1025 14:44:28.537343 21263 solver.cpp:201] Data: 00000022_n13054560/n13054560_4674.JPEG9, Cost: 0
+I1025 14:44:28.537358 21263 solver.cpp:201] Data: 00000023_n02415577/n02415577_26961.JPEGj, Cost: 0
+I1025 14:44:28.537374 21263 solver.cpp:201] Data: 00000024_n01443537/n01443537_18165.JPEG›, Cost: 0
+I1025 14:44:28.537390 21263 solver.cpp:201] Data: 00000025_n01443537/n01443537_5343.JPEGÌ, Cost: 1
+I1025 14:44:28.537406 21263 solver.cpp:201] Data: 00000026_n04553703/n04553703_32993.JPEGý, Cost: 0
+I1025 14:44:28.537421 21263 solver.cpp:201] Data: 00000027_n01484850/n01484850_21665.JPEG., Cost: 2
+I1025 14:44:28.537436 21263 solver.cpp:201] Data: 00000028_n01443537/n01443537_1361.JPEG_, Cost: 0
+I1025 14:44:28.537452 21263 solver.cpp:201] Data: 00000029_n01484850/n01484850_30150.JPEG, Cost: 3
+I1025 14:44:28.537467 21263 solver.cpp:201] Data: 00000030_n02108089/n02108089_14373.JPEGÁ, Cost: 0
+I1025 14:44:28.537482 21263 solver.cpp:201] Data: 00000031_n02666196/n02666196_16217.JPEGò, Cost: 0
+I1025 14:44:28.537497 21263 solver.cpp:201] Data: 00000032_n03874293/n03874293_15377.JPEG#, Cost: 1
+I1025 14:44:28.537514 21263 solver.cpp:201] Data: 00000033_n01496331/n01496331_15534.JPEGT, Cost: 4
+I1025 14:44:28.537529 21263 solver.cpp:201] Data: 00000034_n01491361/n01491361_9811.JPEG…, Cost: 1
+I1025 14:44:28.537545 21263 solver.cpp:201] Data: 00000035_n07753592/n07753592_6951.JPEG¶, Cost: 0
+I1025 14:44:28.537562 21263 solver.cpp:201] Data: 00000036_n01496331/n01496331_5866.JPEGç, Cost: 170
+I1025 14:44:28.537580 21263 solver.cpp:201] Data: 00000037_n02123394/n02123394_1104.JPEG, Cost: 0
+I1025 14:44:28.537595 21263 solver.cpp:201] Data: 00000038_n03970156/n03970156_10667.JPEGI, Cost: 0
+I1025 14:44:28.537612 21263 solver.cpp:201] Data: 00000039_n04266014/n04266014_10613.JPEGz, Cost: 0
+I1025 14:44:28.537627 21263 solver.cpp:201] Data: 00000040_n03042490/n03042490_311.JPEG«, Cost: 0
+I1025 14:44:28.537659 21263 solver.cpp:201] Data: 00000041_n01494475/n01494475_3631.JPEGÜ, Cost: 2
+I1025 14:44:28.537670 21263 solver.cpp:201] Data: 00000042_n01494475/n01494475_1669.JPEG, Cost: 9
+I1025 14:44:28.537681 21263 solver.cpp:201] Data: 00000043_n01484850/n01484850_29704.JPEG>, Cost: 2
+I1025 14:44:28.537691 21263 solver.cpp:201] Data: 00000044_n01443537/n01443537_24209.JPEGo, Cost: 2
+I1025 14:44:28.537703 21263 solver.cpp:201] Data: 00000045_n02229544/n02229544_9661.JPEG , Cost: 0
+I1025 14:44:28.537713 21263 solver.cpp:201] Data: 00000046_n01443537/n01443537_1453.JPEGÑ, Cost: 0
+I1025 14:44:28.537722 21263 solver.cpp:201] Data: 00000047_n01491361/n01491361_8512.JPEG	, Cost: 2
+I1025 14:44:28.537736 21263 solver.cpp:201] Data: 00000048_n01484850/n01484850_6140.JPEG3	, Cost: 1
+I1025 14:44:28.537750 21263 solver.cpp:201] Data: 00000049_n01491361/n01491361_5240.JPEGd	, Cost: 3
+I1025 14:44:28.537765 21263 solver.cpp:204] Iteration 180, loss = 0.0562846
+I1025 14:44:28.537783 21263 solver.cpp:219]     Train net output #0: loss = 0.0562846 (* 1 = 0.0562846 loss)
+I1025 14:44:28.537797 21263 solver.cpp:420] Iteration 180, lr = 0.01
+I1025 14:45:26.023051 21263 solver.cpp:334] Snapshotting to models/noise_negative/caffenet_train_debug_iter_200.caffemodel
+I1025 14:45:27.127010 21263 solver.cpp:341] Snapshotting solver state to models/noise_negative/caffenet_train_debug_iter_200.solverstate
+I1025 14:45:27.788636 21263 solver.cpp:243] Iteration 200, loss = 0.00707488
+I1025 14:45:27.788704 21263 solver.cpp:264] Iteration 200, Testing net (#0)
+I1025 14:45:41.948345 21263 solver.cpp:315]     Test net output #0: accuracy = 0.506099
+I1025 14:45:41.948428 21263 solver.cpp:315]     Test net output #1: loss = 2.91312 (* 1 = 2.91312 loss)
+I1025 14:45:41.948443 21263 solver.cpp:250] Optimization Done.
+I1025 14:45:41.948454 21263 caffe.cpp:130] Optimization Done.

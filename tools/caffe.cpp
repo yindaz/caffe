@@ -5,7 +5,14 @@
 #include <string>
 #include <vector>
 
+
+
 #include "caffe/caffe.hpp"
+#include "caffe/data_process.hpp"
+
+//DataProcess ExternData;
+//
+//ExternData.ACTIVATE = true;
 
 using caffe::Blob;
 using caffe::Caffe;
@@ -14,6 +21,7 @@ using caffe::Layer;
 using caffe::shared_ptr;
 using caffe::Timer;
 using caffe::vector;
+
 
 
 DEFINE_int32(gpu, -1,
@@ -86,6 +94,7 @@ int train() {
 
   caffe::SolverParameter solver_param;
   caffe::ReadProtoFromTextFileOrDie(FLAGS_solver, &solver_param);
+  //solver_param.set_test_initialization(false);
 
   // If the gpu flag is not provided, allow the mode and device to be set
   // in the solver prototxt.

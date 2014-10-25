@@ -12,7 +12,6 @@
 #include "caffe/util/upgrade_proto.hpp"
 
 
-
 namespace caffe {
 
 template <typename Dtype>
@@ -39,7 +38,9 @@ void Solver<Dtype>::Init(const SolverParameter& param) {
   }
   // Scaffolding code
   InitTrainNet();
+  ExternData.ACTIVATE = false;
   InitTestNets();
+  ExternData.ACTIVATE = true;
   LOG(INFO) << "Solver scaffolding done.";
 }
 
@@ -170,7 +171,7 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   // Remember the initial iter_ value; will be non-zero if we loaded from a
   // resume_file above.
   const int start_iter = iter_;
-
+  ExternData.ACTIVATE = true;
   // For a network that is trained by the solver, no bottom or top vecs
   // should be given, and we will just provide dummy vecs.
   vector<Blob<Dtype>*> bottom_vec;
@@ -183,13 +184,23 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 
     if (param_.test_interval() && iter_ % param_.test_interval() == 0
         && (iter_ > 0 || param_.test_initialization())) {
+    	ExternData.ACTIVATE = false;
       TestAll();
+        ExternData.ACTIVATE = true;
     }
 
     const bool display = param_.display() && iter_ % param_.display() == 0;
     net_->set_debug_info(display && param_.debug_info());
+    ExternData.ResetDataLocal(ExternData.SelectedDataID.size());
+    ExternData.MoveNewDataLocal();
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (display) {
+      LOG(INFO) << "Weight: ";
+      for (int i = 0; i<50; i++)
+      {
+    	  LOG(INFO) << "Data: " << (char*)ExternData.Key[i].mv_data << ", Cost: " << ExternData.Weight[i];
+      }
+
       LOG(INFO) << "Iteration " << iter_ << ", loss = " << loss;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();
       int score_index = 0;
@@ -225,12 +236,16 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   // updated the parameters "max_iter" times -- this final pass is only done to
   // display the loss, which is computed in the forward pass.
   if (param_.display() && iter_ % param_.display() == 0) {
+	  ExternData.ResetDataLocal(ExternData.SelectedDataID.size());
+	  ExternData.MoveNewDataLocal();
     Dtype loss;
     net_->Forward(bottom_vec, &loss);
     LOG(INFO) << "Iteration " << iter_ << ", loss = " << loss;
   }
   if (param_.test_interval() && iter_ % param_.test_interval() == 0) {
-    TestAll();
+	  ExternData.ACTIVATE = false;
+	        TestAll();
+	  ExternData.ACTIVATE = true;
   }
   LOG(INFO) << "Optimization Done.";
 }

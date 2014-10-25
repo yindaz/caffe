@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
     }
     // sequential
     snprintf(key_cstr, kMaxKeyLength, "%08d_%s", line_id,
-        lines[line_id].first.c_str());
+        lines[line_id].first.c_str()); // "%08d_%s"
     string value;
     datum.SerializeToString(&value);
     string keystr(key_cstr);

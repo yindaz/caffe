@@ -29,6 +29,14 @@ void InnerProductLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     vector<Blob<Dtype>*>* bottom) {
   if (this->param_propagate_down_[0]) {
+	    if ( !ExternData.IdentifyOutlier || !ExternData.ReWeighted)
+	    {
+	      const Dtype* bottom_data = (*bottom)[0]->cpu_data();
+	      const Dtype* top_source = top[0]->cpu_diff();
+	      ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
+	      ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);
+	    }
+
     const Dtype* top_diff = top[0]->gpu_diff();
     const Dtype* bottom_data = (*bottom)[0]->gpu_data();
     // Gradient with respect to weight

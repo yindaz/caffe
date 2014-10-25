@@ -7,7 +7,7 @@
 #include "caffe/util/math_functions.hpp"
 #include "caffe/vision_layers.hpp"
 
-extern DataProcess ExternData;
+//DataProcess ExternData;
 
 namespace caffe {
 
@@ -82,6 +82,7 @@ void InnerProductLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     // Detect outlier if haven't done
     if ( !ExternData.IdentifyOutlier || !ExternData.ReWeighted)
     {
+      const Dtype* bottom_data = (*bottom)[0]->cpu_data();
       const Dtype* top_source = top[0]->cpu_diff();
       ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
       ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);

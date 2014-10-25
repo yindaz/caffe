@@ -5,6 +5,9 @@
 #include "caffe/layer.hpp"
 #include "caffe/util/math_functions.hpp"
 #include "caffe/vision_layers.hpp"
+#include "caffe/data_process.hpp"
+
+extern DataProcess ExternData;
 
 namespace caffe {
 
@@ -46,7 +49,7 @@ void SoftmaxWithLossLayerNegative<Dtype>::Forward_cpu(
       int l = static_cast<int>(label[i * spatial_dim + j]);
       Dtype r = label[i * spatial_dim + j] - l;
 
-      if (Extern.MiniBatchIsneg[i]) // negative label 0.1
+      if (ExternData.MiniBatchIsneg[i]) // negative label 0.1
       {
         loss -= log(std::max( 1 - prob_data[i * dim + l * spatial_dim + j],
                            Dtype(FLT_MIN)));
@@ -109,7 +112,7 @@ void SoftmaxWithLossLayerNegative<Dtype>::Backward_cpu(const vector<Blob<Dtype>*
       for (int j = 0; j < spatial_dim; ++j) {
         int l = static_cast<int>(label[i * spatial_dim + j]);
         Dtype r = label[i * spatial_dim + j] - l;
-        if (Extern.MiniBatchIsneg[i]) // negative label 0.1
+        if (ExternData.MiniBatchIsneg[i]) // negative label 0.1
         {
           for (int k = 0; k < dim; ++k)
           {
@@ -127,8 +130,8 @@ void SoftmaxWithLossLayerNegative<Dtype>::Backward_cpu(const vector<Blob<Dtype>*
       }
     }
     // Scale gradient
-    //const Dtype loss_weight = top[0]->cpu_diff()[0];
-    //caffe_scal(prob_.count(), loss_weight / num / spatial_dim, bottom_diff);
+    const Dtype loss_weight = top[0]->cpu_diff()[0];
+    caffe_scal(prob_.count(), loss_weight / num / spatial_dim, bottom_diff);
   }
 }
 
