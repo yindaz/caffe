@@ -172,7 +172,7 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   // resume_file above.
   const int start_iter = iter_;
   ExternData.ACTIVATE = true;
-  ExternData.NoiseRate = 0;
+  //ExternData.NoiseRate = 0;
   // For a network that is trained by the solver, no bottom or top vecs
   // should be given, and we will just provide dummy vecs.
   vector<Blob<Dtype>*> bottom_vec;
@@ -196,11 +196,17 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     ExternData.MoveNewDataLocal();
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (display) {
-      LOG(INFO) << "Weight: ";
-      for (int i = 0; i<50; i++)
+     // LOG(INFO) << "Weight: ";
+     /* for (int i = 0; i<50; i++)
       {
     	  LOG(INFO) << "Data: " << (char*)ExternData.Key[i].mv_data << ", Cost: " << ExternData.Weight[i];
-      }
+      } */
+	LOG(INFO) << "Own information:";
+	LOG(INFO) << "All data recorded: " << ExternData.InitialID << "/" << ExternData.NumberData;
+	LOG(INFO) << "Current data inuse: " << ExternData.MiniBatchDataID[0] << "~" << ExternData.MiniBatchDataID[ExternData.MiniBatchDataID.size()-1];
+	LOG(INFO) << "POS: " << ExternData.NumPos << ", NEG: " << ExternData.NumNeg << ", NULL: " << ExternData.NumNull;
+	LOG(INFO) << "Noise: " << ExternData.NoiseRate;  
+	LOG(INFO) << "Prepared data for next: " << ExternData.SelectedDataID[0] << "~" << ExternData.SelectedDataID[ExternData.SelectedDataID.size()-1];
 
       LOG(INFO) << "Iteration " << iter_ << ", loss = " << loss;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();

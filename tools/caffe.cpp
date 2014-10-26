@@ -9,8 +9,7 @@
 
 #include "caffe/caffe.hpp"
 #include "caffe/data_process.hpp"
-
-//DataProcess ExternData;
+extern DataProcess ExternData;
 //
 //ExternData.ACTIVATE = true;
 
@@ -37,6 +36,7 @@ DEFINE_string(weights, "",
     "Cannot be set simultaneously with snapshot.");
 DEFINE_int32(iterations, 50,
     "The number of iterations to run.");
+DEFINE_double(noise, 0.0, "The noise rate");
 
 // A simple registry for caffe commands.
 typedef int (*BrewFunction)();
@@ -84,7 +84,6 @@ int device_query() {
 }
 RegisterBrewFunction(device_query);
 
-
 // Train / Finetune a model.
 int train() {
   CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
@@ -112,6 +111,9 @@ int train() {
     LOG(INFO) << "Use CPU.";
     Caffe::set_mode(Caffe::CPU);
   }
+
+  ExternData.NoiseRate = FLAGS_noise;
+  LOG(INFO) << "Noise rate set: " << ExternData.NoiseRate;
 
   LOG(INFO) << "Starting Optimization";
   shared_ptr<caffe::Solver<float> >
