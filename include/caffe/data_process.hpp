@@ -180,7 +180,7 @@ public:
 			}
 			std::sort(scores.begin(), scores.end(), DataProcess::comparator_pair_index);
 
-			int KillNumber = (int) (PositiveNum * 0);
+			int KillNumber = (int) (PositiveNum * NoiseRate);
 			IsOutlier.assign(N, false);
 			for (int i = 0; i < KillNumber; ++i)
 			{
@@ -284,6 +284,7 @@ public:
   	int NumPos, NumNeg, NumAll, NumNull;
 
   	bool ACTIVATE;
+  	float NoiseRate;
 
 };
 

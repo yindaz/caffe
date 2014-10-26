@@ -172,6 +172,7 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   // resume_file above.
   const int start_iter = iter_;
   ExternData.ACTIVATE = true;
+  ExternData.NoiseRate = 0;
   // For a network that is trained by the solver, no bottom or top vecs
   // should be given, and we will just provide dummy vecs.
   vector<Blob<Dtype>*> bottom_vec;

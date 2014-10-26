@@ -14,6 +14,8 @@ DataProcess::DataProcess()
 	InitialID = 0;
 	CurrentID = 0;
 	NumberData = 0;
+
+	NoiseRate = 0;
 }
 
 void DataProcess::SetupLMDB(  MDB_dbi &dbi,  MDB_txn* &txn)
