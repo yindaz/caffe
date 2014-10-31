@@ -28,14 +28,35 @@ template <typename Dtype>
 void InnerProductLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     vector<Blob<Dtype>*>* bottom) {
+
+	//LOG(INFO) << "InnerProductLayer backward";
   if (this->param_propagate_down_[0]) {
 	    if ( !ExternData.IdentifyOutlier || !ExternData.ReWeighted)
 	    {
-	      const Dtype* bottom_data = (*bottom)[0]->cpu_data();
-	      const Dtype* top_source = top[0]->cpu_diff();
-	      ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
-	      ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);
+		//LOG(INFO)<<"Find outlier";
+		//LOG(INFO) << "InnerProductLayer backward DataProcess";
+	      const Dtype* bottom_data = (*bottom)[0]->gpu_data();
+	      const Dtype* top_source = top[0]->gpu_diff();
+		//LOG(INFO) << "InnerProductLayer backward FindOutlier begin";
+	      ExternData.FindOutlier_gpu<Dtype>( top_source, bottom_data, N_, M_, K_);
+		//LOG(INFO) << "InnerProductLayer backward ComputeReweighting begin";
+	      ExternData.ComputeReweighting_gpu<Dtype>( top[0]->mutable_gpu_diff(), N_);
+		//LOG(INFO) << "InnerProductLayer backward DataProcess End";
+
+//		//LOG(INFO)<<"Find outlier";
+//		//LOG(INFO) << "InnerProductLayer backward DataProcess";
+//		  const Dtype* bottom_data = (*bottom)[0]->cpu_data();
+//		  const Dtype* top_source = top[0]->cpu_diff();
+//		//LOG(INFO) << "InnerProductLayer backward FindOutlier begin";
+//		  ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
+//		//LOG(INFO) << "InnerProductLayer backward ComputeReweighting begin";
+//		  ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);
+//		//LOG(INFO) << "InnerProductLayer backward DataProcess End";
 	    }
+//else
+//{
+//	LOG(INFO) << "Nothing happens";
+//}
 
     const Dtype* top_diff = top[0]->gpu_diff();
     const Dtype* bottom_data = (*bottom)[0]->gpu_data();
@@ -57,6 +78,8 @@ void InnerProductLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         top_diff, this->blobs_[0]->gpu_data(), (Dtype)0.,
         (*bottom)[0]->mutable_gpu_diff());
   }
+	
+	//LOG(INFO) << "InnerProductLayer backward end";
 }
 
 INSTANTIATE_CLASS(InnerProductLayer);

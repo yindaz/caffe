@@ -143,13 +143,58 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   this->datum_size_ = datum.channels() * datum.height() * datum.width();
 
   // get all keys from dataset
-  ExternData.SetupDataNumber( mdb_env_);
-  ExternData.SetupLMDB( mdb_dbi_, mdb_txn_);
+	if (ExternData.InitialID == 0 )
+	{
+	  ExternData.SetupDataNumber( mdb_env_);
+	  ExternData.SetupLMDB( mdb_dbi_, mdb_txn_);
+	  mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_FIRST);
+	  ExternData.Key[0] = mdb_key_;
+	  for (int i = 1; i < ExternData.NumberData; i++)
+	  {
+		mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_NEXT);
+		ExternData.Key[i] = mdb_key_;
+	  }
+	  mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_FIRST);
+	  ExternData.InitialID = ExternData.NumberData;
+	  LOG(INFO) << "Key initialized: " << ExternData.NumberData;
+	  LOG(INFO) << (char *) ExternData.Key[0].mv_data;
+	  LOG(INFO) << (char *) ExternData.Key[1].mv_data;
+	  LOG(INFO) << (char *) ExternData.Key[ExternData.InitialID-1].mv_data;
+		// jump to 243712
+		//int curID = 0;
+		//char a[8];
+		//while( curID!=243712)
+		//{
+		//	mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_NEXT);
+		//	for (int i = 0; i<8; i++)
+		//	{
+		//	  a[i] = *((char *)mdb_key_.mv_data + i);
+		//	}
+		//	curID = atoi(a);
+		//}
+	}
+
+
 }
 
 // This function is used to create a thread that prefetches the data.
 template <typename Dtype>
 void DataLayer<Dtype>::InternalThreadEntry() {
+  // detect training or testing, cannot have the same #samples
+  MDB_stat stat;
+  mdb_env_stat( mdb_env_, &stat);
+  int NumberData = stat.ms_entries;
+  bool DATAUPDATE = true;
+  if (NumberData != ExternData.NumberData)
+  {
+	  //LOG(INFO) << "Loading testing data";
+	  DATAUPDATE = false;
+  }
+  else{
+	  //LOG(INFO) << "Loading training data";
+  }
+
+
   Datum datum;
   CHECK(this->prefetch_data_.count());
   Dtype* top_data = this->prefetch_data_.mutable_cpu_data();
@@ -160,7 +205,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
   const int batch_size = this->layer_param_.data_param().batch_size();
 
   //ExternData.ResetDataLocal(batch_size);
-  if (ExternData.ACTIVATE)
+  if (DATAUPDATE)
   {
 	  ExternData.SelectedDataID.assign(batch_size, -1);
   }
@@ -191,9 +236,25 @@ void DataLayer<Dtype>::InternalThreadEntry() {
     }
 
     // update to extern data
-    ExternData.AddNewDataGlobalWithKey( mdb_key_, top_label[item_id]);
-    ExternData.AddNewDataLocal(false, item_id);
+    // ExternData.AddNewDataGlobalWithKey( mdb_key_, top_label[item_id]);
+    // ExternData.AddNewDataLocal(false, item_id);
 
+    if (DATAUPDATE)
+    {
+		char a[9];
+		for (int i = 0; i<8; i++)
+		{
+		  a[i] = *((char *)mdb_key_.mv_data + i);
+		}
+		a[8] = 0;
+		int curID = atoi(a);
+//		LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
+		ExternData.UpdateGlobalLabel( curID, top_label[item_id]);
+		ExternData.UpdateSelectedID( item_id, curID);
+    }
+
+	
+    
     // go to the next iter
     switch (this->layer_param_.data_param().backend()) {
     case DataParameter_DB_LEVELDB:
@@ -211,14 +272,30 @@ void DataLayer<Dtype>::InternalThreadEntry() {
         DLOG(INFO) << "Restarting data prefetching from start.";
         CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
                 &mdb_value_, MDB_FIRST), MDB_SUCCESS);
-        ExternData.AddNewDataLocal(true, 0);
+	//ExternData.InitialID = 0;
+        //ExternData.AddNewDataLocal(true, 0);
       }
       break;
     default:
       LOG(FATAL) << "Unknown database backend";
     }
   }
-
+  if (DATAUPDATE)
+  {
+//	  LOG(INFO) << ExternData.ReadyToRead;
+//	  while(!ExternData.ReadyToRead && ExternData.CurrentID==255)
+//	  {
+//		  ExternData.ReadyToRead = true;
+//		  usleep(1000);
+//		  LOG(INFO) << "*";
+//	  }
+//	  ExternData.ReadyToRead = true;
+//	  LOG(INFO) << ExternData.ReadyToRead;
+//	  LOG(INFO) << ExternData.readReadyToRead();
+	  ExternData.setReadyToRead(true);
+//	  LOG(INFO) << ExternData.readReadyToRead();
+	  ExternData.IterCounter ++;
+  }
 //debug
 //  if (ExternData.ACTIVATE)
 //  {

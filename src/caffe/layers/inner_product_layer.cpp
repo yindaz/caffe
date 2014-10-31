@@ -82,11 +82,16 @@ void InnerProductLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     // Detect outlier if haven't done
     if ( !ExternData.IdentifyOutlier || !ExternData.ReWeighted)
     {
+	LOG(INFO) << "Find outlier...";
       const Dtype* bottom_data = (*bottom)[0]->cpu_data();
       const Dtype* top_source = top[0]->cpu_diff();
       ExternData.FindOutlier<Dtype>( top_source, bottom_data, N_, M_, K_);
       ExternData.ComputeReweighting<Dtype>( top[0]->mutable_cpu_diff(), N_);
     }
+else
+{
+	LOG(INFO) << "Nothing happens...";
+}
     
     const Dtype* top_diff = top[0]->cpu_diff();
     const Dtype* bottom_data = (*bottom)[0]->cpu_data();

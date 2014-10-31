@@ -6,6 +6,8 @@
 #include <fstream>
 
 #include "boost/scoped_ptr.hpp"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include "hdf5.h"
 #include "leveldb/db.h"
 #include "lmdb.h"
@@ -39,6 +41,9 @@ public:
 	void MoveNewDataLocal( );
 
 	void ResetDataLocal( int batchsize);
+
+	void UpdateGlobalLabel( int ID, int l);
+	void UpdateSelectedID( int ID, int gID);
 
 //	void FindOutlier( float* top_diff, float* bottom_data, int &M, int &N, int &K);
 //	void ComputeReweighting( float* top_diff, int M);
@@ -250,7 +255,163 @@ public:
 		}
 	}
 
+	template <typename Dtype>
+		void FindOutlier_gpu( const Dtype* top_diff, const Dtype* bottom_data, int &M, int &N, int &K)
+		{
+			if (!ACTIVATE) return;
 
+			if ( !IdentifyOutlier )
+			{
+				Blob<Dtype> GradMean;
+		  		Blob<Dtype> Grad;
+		  		//LOG(INFO) << "1";
+
+				Grad.Reshape( N, 1, M, K);
+				GradMean.Reshape(1, 1, M, K);
+				//LOG(INFO) << "2";
+
+				int top_offset = M;
+				int bottom_offset = K;
+				int grad_offset = M*K;
+
+				Dtype* AllGrad = Grad.mutable_gpu_data();
+
+				for (int i = 0; i < N; ++i)
+				{
+					caffe_gpu_gemm<Dtype>(CblasTrans, CblasNoTrans, M, K, 1, (Dtype)1.,
+						top_diff + top_offset * i, bottom_data + bottom_offset * i, (Dtype)0.,
+						AllGrad + grad_offset * i);
+				}
+				//LOG(INFO) << "3";
+
+				const Dtype* element_r = Grad.gpu_data();
+				Dtype* eleMean_w = GradMean.mutable_gpu_data();
+				caffe_gpu_set(grad_offset, (Dtype)0., eleMean_w);
+
+				int PositiveNum = 0;
+				for (int i = 0; i < N; ++i)
+				{
+					if (!MiniBatchIsneg[i])
+					{
+						caffe_gpu_axpy<Dtype>(grad_offset, (Dtype)1., element_r+i*grad_offset, eleMean_w);
+						PositiveNum ++;
+					}
+				}
+				caffe_gpu_scal<Dtype>( grad_offset, (Dtype)(1.0/PositiveNum), eleMean_w);
+				//LOG(INFO) << "4";
+
+				Dtype* element_w = Grad.mutable_gpu_data();
+				const Dtype* eleMean_r = GradMean.gpu_data();
+
+				for (int i = 0; i < N; ++i)
+				{
+					if (!MiniBatchIsneg[i])
+					{
+						caffe_gpu_axpy<Dtype>(grad_offset, (Dtype)(-1.), eleMean_r, element_w+i*grad_offset);
+						caffe_gpu_abs<Dtype>(grad_offset, Grad.gpu_data() + i * grad_offset, element_w + i*grad_offset);
+					}
+
+				}
+				//LOG(INFO) << "5";
+
+				Blob<Dtype> Ones;
+				Ones.Reshape( 1, 1, grad_offset, 1);
+				caffe_gpu_set(grad_offset, (Dtype)1., Ones.mutable_gpu_data());
+
+				//LOG(INFO) <<"5.1";
+
+				Blob<Dtype> OutIndicator;
+				OutIndicator.Reshape( N, 1, 1, 1);
+				caffe_gpu_gemv<Dtype>(CblasNoTrans, N, grad_offset, (Dtype) 1., Grad.gpu_data(), Ones.gpu_data(),
+		    	(Dtype)0., OutIndicator.mutable_gpu_data());
+
+				//LOG(INFO) <<"5.2";
+
+				const Dtype* diff = OutIndicator.cpu_data();
+				std::vector<mypair> scores;
+				scores.clear();
+				for (int i = 0; i < N; ++i)
+				{
+					if (!MiniBatchIsneg[i])
+					{
+						//LOG(INFO) << i << " " << *(diff+i);
+						scores.push_back(mypair(*(diff+i), i));
+					}
+				}
+				std::sort(scores.begin(), scores.end(), DataProcess::comparator_pair_index);
+
+				//LOG(INFO) <<"5.3";
+
+				int KillNumber = (int) (PositiveNum * NoiseRate);
+				IsOutlier.assign(N, false);
+				for (int i = 0; i < KillNumber; ++i)
+				{
+					IsOutlier[scores[PositiveNum-i-1].second] = true;
+					Weight[MiniBatchDataID[scores[PositiveNum-i-1].second]]++;
+				}
+				//LOG(INFO) << "6";
+
+				IdentifyOutlier = true;
+			}
+		};
+
+	//	template <typename Dtype>
+	//	void ComputeReweighting( Dtype* top_diff, int M);
+
+		template <typename Dtype>
+		void ComputeReweighting_gpu(Dtype* top_diff, int M)
+		{
+			if (!ACTIVATE) return;
+			if ( !ReWeighted )
+			{
+				NumAll = MiniBatchLabel.size();
+				NumPos = 0;
+				NumNeg = 0;
+				NumNull = 0;
+
+				for (int i = 0; i < NumAll; ++i)
+				{
+					if (IsOutlier[i])
+					{
+						NumNull ++;
+					}
+					else
+					{
+						if (MiniBatchIsneg[i])
+						{
+							NumNeg ++;
+						}
+						else
+						{
+							NumPos ++;
+						}
+					}
+				}
+
+				PosReweight = (Dtype)1. / (Dtype)2. / (Dtype)NumPos;
+				NegReweight = (Dtype)1. / (Dtype)2. / (Dtype)NumNeg;
+
+				for (int i = 0; i < NumAll; ++i)
+				{
+					if (IsOutlier[i])
+					{
+						caffe_gpu_scal<Dtype>( M, (Dtype)(0.), top_diff + i * M);
+					}
+					else
+					{
+						if ( !MiniBatchIsneg[i] )
+						{
+							caffe_gpu_scal<Dtype>( M, (Dtype)(PosReweight), top_diff + i * M);
+						}
+						else
+						{
+							caffe_gpu_scal<Dtype>( M, (Dtype)(PosReweight), top_diff + i * M);
+						}
+					}
+				}
+				ReWeighted = true;
+			}
+		}
 
 	static bool comparator_pair_index ( const mypair& l, const mypair& r)
 	   { return l.first < r.first; }
@@ -285,7 +446,24 @@ public:
 
   	bool ACTIVATE;
   	float NoiseRate;
+  	bool ReadyToRead;
+  	bool TESTING;
+  	int IterCounter;
 
+  	boost::mutex mtx_;
+
+    void setReadyToRead( bool b) {
+    	mtx_.lock();
+		ReadyToRead = b;
+		mtx_.unlock();
+    }
+    bool readReadyToRead()
+    {
+    	mtx_.lock();
+    	bool b = ReadyToRead;
+    	mtx_.unlock();
+    	return b;
+    }
 };
 
 

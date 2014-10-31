@@ -114,6 +114,7 @@ int train() {
 
   ExternData.NoiseRate = FLAGS_noise;
   LOG(INFO) << "Noise rate set: " << ExternData.NoiseRate;
+  LOG(INFO) << FLAGS_snapshot;
 
   LOG(INFO) << "Starting Optimization";
   shared_ptr<caffe::Solver<float> >

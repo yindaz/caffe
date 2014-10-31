@@ -185,15 +185,25 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 
     if (param_.test_interval() && iter_ % param_.test_interval() == 0
         && (iter_ > 0 || param_.test_initialization())) {
-    	ExternData.ACTIVATE = false;
+//    	int updateCurrent = -1;
+//		while (!ExternData.ReadyToRead)
+//		{
+//			if (updateCurrent != ExternData.CurrentID)
+//			{
+//				LOG(INFO) << "Test waiting: " << updateCurrent;
+//				updateCurrent = ExternData.CurrentID;
+//			}
+//		}
+      ExternData.TESTING = true;
       TestAll();
-        ExternData.ACTIVATE = true;
+      ExternData.TESTING = false;
     }
 
     const bool display = param_.display() && iter_ % param_.display() == 0;
     net_->set_debug_info(display && param_.debug_info());
     ExternData.ResetDataLocal(ExternData.SelectedDataID.size());
     ExternData.MoveNewDataLocal();
+//    LOG(INFO) << "Finish";
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (display) {
      // LOG(INFO) << "Weight: ";
@@ -206,7 +216,9 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 	LOG(INFO) << "Current data inuse: " << ExternData.MiniBatchDataID[0] << "~" << ExternData.MiniBatchDataID[ExternData.MiniBatchDataID.size()-1];
 	LOG(INFO) << "POS: " << ExternData.NumPos << ", NEG: " << ExternData.NumNeg << ", NULL: " << ExternData.NumNull;
 	LOG(INFO) << "Noise: " << ExternData.NoiseRate;  
-	LOG(INFO) << "Prepared data for next: " << ExternData.SelectedDataID[0] << "~" << ExternData.SelectedDataID[ExternData.SelectedDataID.size()-1];
+	LOG(INFO) << "Prepared data for next: " << ExternData.SelectedDataID[0] << "~"
+			<< ExternData.SelectedDataID[ExternData.SelectedDataID.size()-1]
+			<< "(" << ExternData.CurrentID <<")";
 
       LOG(INFO) << "Iteration " << iter_ << ", loss = " << loss;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();

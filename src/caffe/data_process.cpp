@@ -16,6 +16,10 @@ DataProcess::DataProcess()
 	NumberData = 0;
 
 	NoiseRate = 0;
+	SelectedDataID.clear();
+	ReadyToRead = false;
+	TESTING = false;
+	IterCounter = 0;
 }
 
 void DataProcess::SetupLMDB(  MDB_dbi &dbi,  MDB_txn* &txn)
@@ -99,6 +103,28 @@ void DataProcess::AddNewDataGlobalWithKey( const MDB_val &key, int l)
 	}
 }
 
+void DataProcess::UpdateGlobalLabel( int ID, int l)
+{
+	if (!ACTIVATE) return;
+	if (l>=0)
+	{
+		Label[ID] = l;
+		IsNegative[ID] = false;
+	}
+	else
+	{
+		Label[ID] = -l - 1;
+		IsNegative[ID] = true;
+	}
+}
+
+void DataProcess::UpdateSelectedID( int ID, int gID)
+{
+	if (!ACTIVATE) return;
+	SelectedDataID[ID] = gID;
+	CurrentID = ID;
+}
+
 void DataProcess::AddNewDataLocal( bool reset, int id)
 {
 	if (!ACTIVATE) return;
@@ -120,6 +146,33 @@ void DataProcess::AddNewDataLocal( bool reset, int id)
 
 void DataProcess::MoveNewDataLocal( )
 {
+	if (!ACTIVATE) return;
+//	int updateCurrent = -1;
+//	while (!ReadyToRead)
+//	{
+//		if (updateCurrent != CurrentID)
+//		{
+//			LOG(INFO) << "Training waiting: " << updateCurrent << " " << IterCounter;
+//			updateCurrent = CurrentID;
+//		}
+//		usleep(700);
+//		if (CurrentID==255)
+//		{
+//			LOG(INFO) << "/";
+//		}
+//	}
+	while (!readReadyToRead())
+	{
+		usleep(700);
+	}
+//	LOG(INFO) << CurrentID;
+//	LOG(INFO) << SelectedDataID.size() << " data copied.";
+//
+//	for ( int i = 0; i<SelectedDataID.size(); i++)
+//	{
+//		LOG(INFO) << SelectedDataID[i] << " " << Label[SelectedDataID[i]];
+//	}
+
 	for ( int i = 0; i<SelectedDataID.size(); ++i)
 	{
 		MiniBatchWeight[i] = Weight[SelectedDataID[i]];
@@ -128,6 +181,9 @@ void DataProcess::MoveNewDataLocal( )
 		MiniBatchDataID[i] = SelectedDataID[i];
 	}
 	MiniBatchUpdated = true;
+
+//	ReadyToRead = false;
+	setReadyToRead(false);
 }
 
 void DataProcess::ResetDataLocal( int batchsize)
