@@ -17,7 +17,7 @@ DataProcess::DataProcess()
 
 	NoiseRate = 0;
 	SelectedDataID.clear();
-	ReadyToRead = false;
+	setReadyToRead( false );
 	TESTING = false;
 	IterCounter = 0;
 }
@@ -189,7 +189,10 @@ void DataProcess::MoveNewDataLocal( )
 void DataProcess::ResetDataLocal( int batchsize)
 {
 	if (!ACTIVATE) return;
-
+	while (!readReadyToRead())
+	{
+		usleep(700);
+	}
 	//SelectedDataID.assign(batchsize, -1);
 	MiniBatchWeight.assign(batchsize, -1);
 	MiniBatchLabel.assign(batchsize, -1);
