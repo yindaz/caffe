@@ -104,6 +104,8 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
 
     }
   }
+	//LOG(INFO) << loss << " " << num << " " << spatial_dim;	
+
   (*top)[0]->mutable_cpu_data()[0] = loss / num / spatial_dim;
   if (top->size() == 2) {
     (*top)[1]->ShareData(prob_);

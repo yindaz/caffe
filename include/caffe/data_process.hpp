@@ -436,7 +436,7 @@ public:
 	vector<bool> IsOutlier;
 
 	bool ReWeighted;
-
+	
 	
 	MDB_dbi mdb_dbi_;
   	MDB_txn* mdb_txn_;
@@ -464,6 +464,13 @@ public:
     	mtx_.unlock();
     	return b;
     }
+
+	vector<int> PosIDs;
+	vector<int> NegIDs;
+	int pid;
+	int nid;
+	float pnratio;
+	void ReturnDataIDs(int num, float pon, vector<int> &IDs);
 };
 
 

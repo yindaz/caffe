@@ -241,17 +241,18 @@ void DataLayer<Dtype>::InternalThreadEntry() {
 
     if (DATAUPDATE)
     {
-		char a[9];
-		for (int i = 0; i<8; i++)
-		{
-		  a[i] = *((char *)mdb_key_.mv_data + i);
-		}
-		a[8] = 0;
-		int curID = atoi(a);
-//		LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
-		ExternData.UpdateGlobalLabel( curID, top_label[item_id]);
-		ExternData.UpdateSelectedID( item_id, curID);
+			char a[9];
+			for (int i = 0; i<8; i++)
+			{
+				a[i] = *((char *)mdb_key_.mv_data + i);
+			}
+			a[8] = 0;
+			int curID = atoi(a);
+	//		LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
+			ExternData.UpdateGlobalLabel( curID, top_label[item_id]);
+			ExternData.UpdateSelectedID( item_id, curID);
     }
+		//else LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
 
 	
     

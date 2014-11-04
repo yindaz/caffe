@@ -165,17 +165,18 @@ void DataProcess::MoveNewDataLocal( )
 	{
 		usleep(700);
 	}
-//	LOG(INFO) << CurrentID;
-//	LOG(INFO) << SelectedDataID.size() << " data copied.";
-//
-//	for ( int i = 0; i<SelectedDataID.size(); i++)
-//	{
-//		LOG(INFO) << SelectedDataID[i] << " " << Label[SelectedDataID[i]];
-//	}
+	//LOG(INFO) << CurrentID;
+	//LOG(INFO) << SelectedDataID.size() << " data copied.";
 
+	//for ( int i = 0; i<SelectedDataID.size(); i++)
+	//{
+	//	LOG(INFO) << SelectedDataID[i] << " " << Label[SelectedDataID[i]] << " " << IsNegative[SelectedDataID[i]];
+	//}
+	
+	
 	for ( int i = 0; i<SelectedDataID.size(); ++i)
 	{
-		MiniBatchWeight[i] = Weight[SelectedDataID[i]];
+		//MiniBatchWeight[i] = Weight[SelectedDataID[i]];
 		MiniBatchLabel[i] = Label[SelectedDataID[i]];
 		MiniBatchIsneg[i] = IsNegative[SelectedDataID[i]];
 		MiniBatchDataID[i] = SelectedDataID[i];
@@ -201,6 +202,33 @@ void DataProcess::ResetDataLocal( int batchsize)
 	IdentifyOutlier = false;
 	IsOutlier.assign(0, true);
 	ReWeighted = false;
+}
+
+void DataProcess::ReturnDataIDs(int num, float pon, vector<int> &IDs)
+{
+	int posnum = (int)( pon * num );
+	int negnum = num - posnum;
+	IDs.assign(num, -1);
+	for ( int i = 0; i<posnum; i++)
+	{
+		IDs[i] = PosIDs[pid];
+		pid ++;
+		if (pid>=PosIDs.size())
+		{
+			LOG(INFO) << "Positive restart!";
+			pid = 0;
+		}
+	}
+	for ( int i = posnum; i<num; i++)
+	{
+		IDs[i] = NegIDs[nid];
+		nid ++;
+		if (nid>=NegIDs.size())
+		{
+			LOG(INFO) << "Negative restart!";
+			nid = 0;
+		}
+	}
 }
 
 //void DataProcess::FindOutlier( float* top_diff, float* bottom_data, int &M, int &N, int &K)

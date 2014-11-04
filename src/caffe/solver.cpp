@@ -38,9 +38,9 @@ void Solver<Dtype>::Init(const SolverParameter& param) {
   }
   // Scaffolding code
   InitTrainNet();
-  ExternData.ACTIVATE = false;
+  //ExternData.ACTIVATE = false;
   InitTestNets();
-  ExternData.ACTIVATE = true;
+  //ExternData.ACTIVATE = true;
   LOG(INFO) << "Solver scaffolding done.";
 }
 
@@ -201,8 +201,13 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 
     const bool display = param_.display() && iter_ % param_.display() == 0;
     net_->set_debug_info(display && param_.debug_info());
+		//LOG(INFO) << ExternData.SelectedDataID.size();
+
+		//LOG(INFO) << ExternData.readReadyToRead();
     ExternData.ResetDataLocal(ExternData.SelectedDataID.size());
+		//LOG(INFO) << "Initialized";
     ExternData.MoveNewDataLocal();
+		//LOG(INFO) << ExternData.readReadyToRead();
 //    LOG(INFO) << "Finish";
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (display) {
