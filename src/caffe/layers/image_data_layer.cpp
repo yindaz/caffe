@@ -102,7 +102,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 	{
 		ExternData.NumberData = lines_.size();
 
-		// ExternData.Weight.assign( ExternData.NumberData, 0);
+		ExternData.Weight.assign( ExternData.NumberData, 0);
 		ExternData.Label.assign( ExternData.NumberData, 0);
 		// Key.assign(NumberData, MDB_val());
 		ExternData.IsNegative.assign( ExternData.NumberData, false);

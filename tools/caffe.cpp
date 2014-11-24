@@ -38,6 +38,7 @@ DEFINE_int32(iterations, 50,
     "The number of iterations to run.");
 DEFINE_double(noise, 0.0, "The noise rate");
 DEFINE_double(pnratio, 0.5, "The positive/negative ratio");
+DEFINE_int32(classid, 0, "ID of class");
 
 // A simple registry for caffe commands.
 typedef int (*BrewFunction)();
@@ -118,6 +119,7 @@ int train() {
 	ExternData.pnratio = FLAGS_pnratio;
 	LOG(INFO) << "Pos/Neg ratio: " << ExternData.pnratio;
   LOG(INFO) << FLAGS_snapshot;
+	ExternData.classid = FLAGS_classid;
 
   LOG(INFO) << "Starting Optimization";
   shared_ptr<caffe::Solver<float> >

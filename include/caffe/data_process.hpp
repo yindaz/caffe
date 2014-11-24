@@ -344,6 +344,7 @@ public:
 
 				int KillNumber = (int) (PositiveNum * NoiseRate);
 				IsOutlier.assign(N, false);
+				//LOG(INFO) << KillNumber << " " << N <<;
 				for (int i = 0; i < KillNumber; ++i)
 				{
 					IsOutlier[scores[PositiveNum-i-1].second] = true;
@@ -471,6 +472,8 @@ public:
 	int nid;
 	float pnratio;
 	void ReturnDataIDs(int num, float pon, vector<int> &IDs);
+
+	int classid;
 };
 
 

@@ -58,6 +58,7 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   case DataParameter_DB_LMDB:
     CHECK_EQ(mdb_env_create(&mdb_env_), MDB_SUCCESS) << "mdb_env_create failed";
     CHECK_EQ(mdb_env_set_mapsize(mdb_env_, 1099511627776), MDB_SUCCESS);  // 1TB
+		LOG(INFO) << "Open: " << this->layer_param_.data_param().source().c_str();
     CHECK_EQ(mdb_env_open(mdb_env_,
              this->layer_param_.data_param().source().c_str(),
              MDB_RDONLY|MDB_NOTLS, 0664), MDB_SUCCESS) << "mdb_env_open failed";
@@ -148,35 +149,156 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 	  ExternData.SetupDataNumber( mdb_env_);
 	  ExternData.SetupLMDB( mdb_dbi_, mdb_txn_);
 	  mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_FIRST);
-	  ExternData.Key[0] = mdb_key_;
-	  for (int i = 1; i < ExternData.NumberData; i++)
+	  
+		ExternData.PosIDs.clear();
+		ExternData.NegIDs.clear();
+		int label;
+	  for (int i = 0; i < 100000/*ExternData.NumberData*/; i++)
 	  {
-		mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_NEXT);
-		ExternData.Key[i] = mdb_key_;
+			CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
+              &mdb_value_, MDB_GET_CURRENT), MDB_SUCCESS);
+			ExternData.Key[i] = mdb_key_;
+      datum.ParseFromArray(mdb_value_.mv_data,
+          mdb_value_.mv_size);	
+			label = datum.label();
+			if (label < -0.5)
+			{
+				ExternData.Label[i] = -label-1;
+				ExternData.IsNegative[i] = true;
+				//ExternData.NegIDs.push_back(i);
+			}
+			else
+			{
+				ExternData.Label[i] = label;
+				ExternData.IsNegative[i] = false;
+				//ExternData.PosIDs.push_back(i);
+			}	
+			if (label == ExternData.classid)
+			{
+				ExternData.PosIDs.push_back(i);
+			}
+			else if ( label == -ExternData.classid-1 || label>0)
+			{
+				ExternData.NegIDs.push_back(i);
+			}	
+			mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_NEXT);			
 	  }
 	  mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_FIRST);
 	  ExternData.InitialID = ExternData.NumberData;
 	  LOG(INFO) << "Key initialized: " << ExternData.NumberData;
-	  LOG(INFO) << (char *) ExternData.Key[0].mv_data;
-	  LOG(INFO) << (char *) ExternData.Key[1].mv_data;
-	  LOG(INFO) << (char *) ExternData.Key[ExternData.InitialID-1].mv_data;
-		// jump to 243712
-		//int curID = 0;
-		//char a[8];
-		//while( curID!=243712)
-		//{
-		//	mdb_cursor_get(mdb_cursor_, &mdb_key_, &mdb_value_, MDB_NEXT);
-		//	for (int i = 0; i<8; i++)
-		//	{
-		//	  a[i] = *((char *)mdb_key_.mv_data + i);
-		//	}
-		//	curID = atoi(a);
-		//}
+	  //LOG(INFO) << (char *) ExternData.Key[0].mv_data;
+	  //LOG(INFO) << (char *) ExternData.Key[1].mv_data;
+	  //LOG(INFO) << (char *) ExternData.Key[ExternData.InitialID-1].mv_data;
 	}
-
-
 }
 
+// This function is used to create a thread that prefetches the data.
+template <typename Dtype>
+void DataLayer<Dtype>::InternalThreadEntry() {
+  // detect training or testing, cannot have the same #samples
+  MDB_stat stat;
+  mdb_env_stat( mdb_env_, &stat);
+  int NumberData = stat.ms_entries;
+  bool DATAUPDATE = true;
+  if (NumberData != ExternData.NumberData)
+  {
+	  DATAUPDATE = false;
+  }
+
+  Datum datum;
+  CHECK(this->prefetch_data_.count());
+  Dtype* top_data = this->prefetch_data_.mutable_cpu_data();
+  Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
+  if (this->output_labels_) {
+    top_label = this->prefetch_label_.mutable_cpu_data();
+  }
+  const int batch_size = this->layer_param_.data_param().batch_size();
+	
+  if (DATAUPDATE)
+  {
+	  ExternData.SelectedDataID.clear();
+		ExternData.ReturnDataIDs( batch_size, ExternData.pnratio, ExternData.SelectedDataID);	
+	}
+  for (int item_id = 0; item_id < batch_size; ++item_id) {
+    // get a blob
+		if (DATAUPDATE)
+		{
+		  mdb_get	(	mdb_txn_, mdb_dbi_, 
+								&ExternData.Key[ExternData.SelectedDataID[item_id]],
+								&mdb_value_ );	
+			datum.ParseFromArray(mdb_value_.mv_data,
+		        mdb_value_.mv_size);
+      LOG(INFO) <<  ExternData.Label[ExternData.SelectedDataID[item_id]]<<" "<<datum.label();
+		}
+		else
+		{
+			switch (this->layer_param_.data_param().backend()) {
+		  case DataParameter_DB_LEVELDB:
+		    CHECK(iter_);
+		    CHECK(iter_->Valid());
+		    datum.ParseFromString(iter_->value().ToString());
+		    break;
+		  case DataParameter_DB_LMDB:
+		    CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
+		            &mdb_value_, MDB_GET_CURRENT), MDB_SUCCESS);
+		    datum.ParseFromArray(mdb_value_.mv_data,
+		        mdb_value_.mv_size);
+		    break;
+		  default:
+		    LOG(FATAL) << "Unknown database backend";
+		  }
+		}
+
+    // Apply data transformations (mirror, scale, crop...)
+    this->data_transformer_.Transform(item_id, datum, this->mean_, top_data);
+
+    if (this->output_labels_) {
+      top_label[item_id] = datum.label();
+			if (top_label[item_id] != ExternData.classid)
+			{
+				top_label[item_id] = -ExternData.classid-1;
+			}
+    }
+
+    if (DATAUPDATE)
+    {
+			ExternData.UpdateSelectedID( item_id, ExternData.SelectedDataID[item_id]);
+    }
+		else
+		{
+	    // go to the next iter
+		  switch (this->layer_param_.data_param().backend()) {
+		  case DataParameter_DB_LEVELDB:
+		    iter_->Next();
+		    if (!iter_->Valid()) {
+		      // We have reached the end. Restart from the first.
+		      DLOG(INFO) << "Restarting data prefetching from start.";
+		      iter_->SeekToFirst();
+		    }
+		    break;
+		  case DataParameter_DB_LMDB:
+		    if (mdb_cursor_get(mdb_cursor_, &mdb_key_,
+		            &mdb_value_, MDB_NEXT) != MDB_SUCCESS) {
+		      // We have reached the end. Restart from the first.
+		      DLOG(INFO) << "Restarting data prefetching from start.";
+		      CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
+		              &mdb_value_, MDB_FIRST), MDB_SUCCESS);
+		    }
+		    break;
+		  default:
+		    LOG(FATAL) << "Unknown database backend";
+		  }
+		}
+  }
+
+  if (DATAUPDATE)
+  {
+	  ExternData.setReadyToRead(true);
+	  ExternData.IterCounter ++;
+  }
+}
+
+/*
 // This function is used to create a thread that prefetches the data.
 template <typename Dtype>
 void DataLayer<Dtype>::InternalThreadEntry() {
@@ -233,6 +355,42 @@ void DataLayer<Dtype>::InternalThreadEntry() {
 
     if (this->output_labels_) {
       top_label[item_id] = datum.label();
+			if (top_label[item_id]<-0.5 && top_label[item_id]!=-1)
+			{
+				//LOG(INFO) << "Jump: " << top_label[item_id];
+				item_id --;
+				// go to the next iter
+				switch (this->layer_param_.data_param().backend()) {
+				case DataParameter_DB_LEVELDB:
+				  iter_->Next();
+				  if (!iter_->Valid()) {
+				    // We have reached the end. Restart from the first.
+				    DLOG(INFO) << "Restarting data prefetching from start.";
+				    iter_->SeekToFirst();
+				  }
+				  break;
+				case DataParameter_DB_LMDB:
+				  if (mdb_cursor_get(mdb_cursor_, &mdb_key_,
+				          &mdb_value_, MDB_NEXT) != MDB_SUCCESS) {
+				    // We have reached the end. Restart from the first.
+				    DLOG(INFO) << "Restarting data prefetching from start.";
+				    CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
+				            &mdb_value_, MDB_FIRST), MDB_SUCCESS);
+						//ExternData.InitialID = 0;
+				    //ExternData.AddNewDataLocal(true, 0);
+				  }
+				  break;
+				default:
+				  LOG(FATAL) << "Unknown database backend";
+				}
+				
+				continue;
+			}
+			else if ( top_label[item_id] != 0 )
+			{
+				//LOG(INFO) << "Change: " << top_label[item_id];
+				top_label[item_id] = -1;
+			}
     }
 
     // update to extern data
@@ -248,7 +406,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
 			}
 			a[8] = 0;
 			int curID = atoi(a);
-	//		LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
+			//LOG(INFO) << item_id << " " << curID << " " << top_label[item_id];
 			ExternData.UpdateGlobalLabel( curID, top_label[item_id]);
 			ExternData.UpdateSelectedID( item_id, curID);
     }
@@ -273,7 +431,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
         DLOG(INFO) << "Restarting data prefetching from start.";
         CHECK_EQ(mdb_cursor_get(mdb_cursor_, &mdb_key_,
                 &mdb_value_, MDB_FIRST), MDB_SUCCESS);
-	//ExternData.InitialID = 0;
+				//ExternData.InitialID = 0;
         //ExternData.AddNewDataLocal(true, 0);
       }
       break;
@@ -312,7 +470,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
 //	  }
 //  }
 
-}
+}*/
 
 INSTANTIATE_CLASS(DataLayer);
 

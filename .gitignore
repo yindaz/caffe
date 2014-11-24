@@ -1,5 +1,6 @@
 ## General
 script
+*.DS_Store
 
 # Compiled Object files
 *.slo

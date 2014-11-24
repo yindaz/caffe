@@ -20,6 +20,8 @@ DataProcess::DataProcess()
 	setReadyToRead( false );
 	TESTING = false;
 	IterCounter = 0;
+	pid = 0;
+	nid = 0;
 }
 
 void DataProcess::SetupLMDB(  MDB_dbi &dbi,  MDB_txn* &txn)
@@ -176,7 +178,7 @@ void DataProcess::MoveNewDataLocal( )
 	
 	for ( int i = 0; i<SelectedDataID.size(); ++i)
 	{
-		//MiniBatchWeight[i] = Weight[SelectedDataID[i]];
+		MiniBatchWeight[i] = Weight[SelectedDataID[i]];
 		MiniBatchLabel[i] = Label[SelectedDataID[i]];
 		MiniBatchIsneg[i] = IsNegative[SelectedDataID[i]];
 		MiniBatchDataID[i] = SelectedDataID[i];

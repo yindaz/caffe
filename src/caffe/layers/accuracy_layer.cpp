@@ -40,11 +40,36 @@ void AccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   vector<Dtype> maxval(top_k_+1);
   vector<int> max_id(top_k_+1);
 
-  int validnum = 0;
+  Dtype posvalidnum = 0;
+	Dtype negvalidnum = 0;
+	Dtype posaccuracy = 0;
+	Dtype negaccuracy = 0;
 
   for (int i = 0; i < num; ++i) {
-	  if(bottom_label[i]>=0 && bottom_label[i]<=1000) // only take 0~~4
-	  {
+		int ori = static_cast<int>(bottom_label[i]);
+		bool isneg = ori<-0.5;
+		if (isneg) ori = -ori-1;
+		Dtype p = bottom_data[i * dim + ori];
+		if ( p>0.5 && !isneg )
+		{
+			++posaccuracy;
+		}		
+		if ( !isneg )
+		{
+			++posvalidnum;
+		}	
+		if ( p<0.5 && isneg )
+		{
+			++negaccuracy;
+		}	
+		if ( isneg )
+		{
+			++negvalidnum;
+		}
+	  //validnum ++;
+
+		/*if(bottom_label[i]>=0 && bottom_label[i]<=1000) // only take 0~~4
+	  {			
 		  // Top-k accuracy
 		  std::vector<std::pair<Dtype, int> > bottom_data_vector;
 		  for (int j = 0; j < dim; ++j) {
@@ -56,19 +81,24 @@ void AccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 			  bottom_data_vector.end(), std::greater<std::pair<Dtype, int> >());
 		  // check if true label is in top k predictions
 		  for (int k = 0; k < top_k_; k++) {
-			if (bottom_data_vector[k].second == static_cast<int>(bottom_label[i])) {
-			  ++accuracy;
-			  break;
-			}
+				if (bottom_label[i]>=0)
+				{
+					if (bottom_data_vector[k].second == static_cast<int>(bottom_label[i])) {
+		  	  ++accuracy;
+	  		  break;
+  				}
+				}
 		  }
 		  validnum++;
-	  }
+	  }*/
 
   }
-
+	
+	accuracy = 0.5*( posaccuracy / ((float)posvalidnum+0.0001) + negaccuracy / ((float)negvalidnum+0.0001) );
   // LOG(INFO) << "Accuracy: " << accuracy;
 //  (*top)[0]->mutable_cpu_data()[0] = accuracy / num;
-  (*top)[0]->mutable_cpu_data()[0] = accuracy / ((float)validnum+0.0001);
+  //(*top)[0]->mutable_cpu_data()[0] = accuracy / ((float)validnum+0.0001);
+	(*top)[0]->mutable_cpu_data()[0] = accuracy;
   // Accuracy layer should not be used as a loss function.
 }
 

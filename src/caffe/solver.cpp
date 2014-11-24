@@ -208,7 +208,18 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 		//LOG(INFO) << "Initialized";
     ExternData.MoveNewDataLocal();
 		//LOG(INFO) << ExternData.readReadyToRead();
-//    LOG(INFO) << "Finish";
+    /*LOG(INFO) << "Load data finish";
+		LOG(INFO) << "Own information:";
+		LOG(INFO) << "All data recorded: " << ExternData.InitialID << "/" << ExternData.NumberData;
+		LOG(INFO) << "Current data inuse: " << ExternData.MiniBatchDataID[0] << "~" <<
+ 					ExternData.MiniBatchDataID[ExternData.MiniBatchDataID.size()-1];
+		LOG(INFO) << "POS: " << ExternData.NumPos << ", NEG: " << ExternData.NumNeg << ", NULL: " <<
+					ExternData.NumNull;
+		LOG(INFO) << "Noise: " << ExternData.NoiseRate;  
+		LOG(INFO) << "Prepared data for next: " << ExternData.SelectedDataID[0] << "~"
+			<< ExternData.SelectedDataID[ExternData.SelectedDataID.size()-1]
+			<< "(" << ExternData.CurrentID <<")";*/
+
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (display) {
      // LOG(INFO) << "Weight: ";
